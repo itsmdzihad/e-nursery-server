@@ -6,7 +6,7 @@ async function main() {
   await connect(DB_URL);
   console.log("DATABASE IS CONNECTED");
   app.listen(PORT, () => {
-    console.log(`server is running on http://localhost:${PORT}`);
+    console.log(`server  is running on http://localhost:${PORT}`);
   });
 }
 
