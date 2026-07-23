@@ -1,7 +1,8 @@
 import express, { Application, ErrorRequestHandler } from "express";
-import sendRes from "./App/utils/sendRes";
+import sendRes from "./App/utils/sendRes.js";
 import cors from "cors";
-import productRoutes from "./App/routes/product.route";
+import productRoutes from "./App/routes/product.route.js";
+import { prisma } from "./App/config/db.js";
 
 const app: Application = express();
 const port = 3000;
@@ -10,8 +11,19 @@ const port = 3000;
 app.use(cors());
 app.use(express.json());
 
+const connect = async () => {
+  try {
+    await prisma.$connect();
+    console.log("Database is connected");
+  } catch (e) {
+    console.log("Database connecting Fail");
+  }
+};
+
+connect();
+
 // product route
-app.use("/api/v1/products", productRoutes);
+// app.use("/api/v1/products", productRoutes);
 
 app.get("/", (req, res) => {
   sendRes({
@@ -19,16 +31,6 @@ app.get("/", (req, res) => {
     success: true,
     statusCode: 200,
     message: "server is running",
-    data: {},
-  });
-});
-
-app.get("*", (req, res) => {
-  sendRes({
-    res,
-    success: false,
-    statusCode: 404,
-    message: "Route Not Found",
     data: {},
   });
 });

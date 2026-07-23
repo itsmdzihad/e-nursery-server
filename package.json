@@ -1,17 +1,24 @@
 {
   "name": "e-nursery-backend",
   "version": "1.0.0",
-  "description": "",
-  "type": "module",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "build": "tsc --w",
+    "build": "npx tsc --w",
     "start": "node dist/server.js",
     "dev": "nodemon dist/server.js"
   },
-  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/itsmdzihad/e-nursery-.git"
+  },
   "author": "",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/itsmdzihad/e-nursery-/issues"
+  },
+  "homepage": "https://github.com/itsmdzihad/e-nursery-#readme",
+  "description": "",
   "dependencies": {
     "@prisma/adapter-pg": "^7.9.0",
     "@prisma/client": "^7.9.0",
@@ -24,7 +31,7 @@
   "devDependencies": {
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
-    "@types/pg": "^8.20.0",
+    "@types/node": "^26.1.1",
     "nodemon": "^3.1.14",
     "prisma": "^7.9.0",
     "typescript": "^7.0.2"

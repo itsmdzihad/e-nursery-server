@@ -1,18 +1,8 @@
 import { Router } from "express";
-import {
-  createProduct,
-  getAllProduct,
-} from "../controllers/product.controllers";
-import requestValidator from "../utils/requestValidator";
-import { createProductValidation } from "../validations/productValidation";
+
+import requestValidator from "../utils/requestValidator.js";
+import { createProductValidation } from "../validations/productValidation.js";
 
 const productRoutes = Router();
-
-productRoutes.get("/", getAllProduct);
-productRoutes.post(
-  "/",
-  requestValidator(createProductValidation),
-  createProduct
-);
 
 export default productRoutes;
