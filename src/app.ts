@@ -1,8 +1,9 @@
 import express, { Application, ErrorRequestHandler } from "express";
 import sendRes from "./App/utils/sendRes.js";
 import cors from "cors";
-import productRoutes from "./App/routes/product.route.js";
 import { prisma } from "./App/config/db.js";
+import authRoute from "./App/modules/auth/auth.route.js";
+import router from "./App/routes/index.js";
 
 const app: Application = express();
 const port = 3000;
@@ -23,6 +24,7 @@ const connect = async () => {
 connect();
 
 // product route
+app.use("/api/v1", router);
 // app.use("/api/v1/products", productRoutes);
 
 app.get("/", (req, res) => {
