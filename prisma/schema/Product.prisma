@@ -1,0 +1,20 @@
+model Product {
+    id          String   @id @default(uuid())
+    name        String
+    description String
+    images      String[]
+    price       String
+    quantity    String
+    sizes       Size[]
+    createAt    DateTime @default(now())
+    updateAt    DateTime @updatedAt
+}
+
+model Size {
+    id        String  @id @default(uuid())
+    name      String
+    images    String?
+    quantity  Int
+    productId String
+    product   Product @relation(fields: [productId], references: [id])
+}
