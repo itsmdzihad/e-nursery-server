@@ -28,25 +28,27 @@ export type AggregateSize = {
 
 export type SizeAvgAggregateOutputType = {
   quantity: number | null
+  price: runtime.Decimal | null
 }
 
 export type SizeSumAggregateOutputType = {
   quantity: number | null
+  price: runtime.Decimal | null
 }
 
 export type SizeMinAggregateOutputType = {
   id: string | null
   name: string | null
-  images: string | null
   quantity: number | null
+  price: runtime.Decimal | null
   productId: string | null
 }
 
 export type SizeMaxAggregateOutputType = {
   id: string | null
   name: string | null
-  images: string | null
   quantity: number | null
+  price: runtime.Decimal | null
   productId: string | null
 }
 
@@ -55,6 +57,7 @@ export type SizeCountAggregateOutputType = {
   name: number
   images: number
   quantity: number
+  price: number
   productId: number
   _all: number
 }
@@ -62,25 +65,27 @@ export type SizeCountAggregateOutputType = {
 
 export type SizeAvgAggregateInputType = {
   quantity?: true
+  price?: true
 }
 
 export type SizeSumAggregateInputType = {
   quantity?: true
+  price?: true
 }
 
 export type SizeMinAggregateInputType = {
   id?: true
   name?: true
-  images?: true
   quantity?: true
+  price?: true
   productId?: true
 }
 
 export type SizeMaxAggregateInputType = {
   id?: true
   name?: true
-  images?: true
   quantity?: true
+  price?: true
   productId?: true
 }
 
@@ -89,6 +94,7 @@ export type SizeCountAggregateInputType = {
   name?: true
   images?: true
   quantity?: true
+  price?: true
   productId?: true
   _all?: true
 }
@@ -182,8 +188,9 @@ export type SizeGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
 export type SizeGroupByOutputType = {
   id: string
   name: string
-  images: string | null
+  images: string[]
   quantity: number
+  price: runtime.Decimal
   productId: string
   _count: SizeCountAggregateOutputType | null
   _avg: SizeAvgAggregateOutputType | null
@@ -213,8 +220,9 @@ export type SizeWhereInput = {
   NOT?: Prisma.SizeWhereInput | Prisma.SizeWhereInput[]
   id?: Prisma.StringFilter<"Size"> | string
   name?: Prisma.StringFilter<"Size"> | string
-  images?: Prisma.StringNullableFilter<"Size"> | string | null
+  images?: Prisma.StringNullableListFilter<"Size">
   quantity?: Prisma.IntFilter<"Size"> | number
+  price?: Prisma.DecimalFilter<"Size"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   productId?: Prisma.StringFilter<"Size"> | string
   product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
 }
@@ -222,8 +230,9 @@ export type SizeWhereInput = {
 export type SizeOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  images?: Prisma.SortOrderInput | Prisma.SortOrder
+  images?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
+  price?: Prisma.SortOrder
   productId?: Prisma.SortOrder
   product?: Prisma.ProductOrderByWithRelationInput
 }
@@ -234,8 +243,9 @@ export type SizeWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.SizeWhereInput[]
   NOT?: Prisma.SizeWhereInput | Prisma.SizeWhereInput[]
   name?: Prisma.StringFilter<"Size"> | string
-  images?: Prisma.StringNullableFilter<"Size"> | string | null
+  images?: Prisma.StringNullableListFilter<"Size">
   quantity?: Prisma.IntFilter<"Size"> | number
+  price?: Prisma.DecimalFilter<"Size"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   productId?: Prisma.StringFilter<"Size"> | string
   product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
 }, "id">
@@ -243,8 +253,9 @@ export type SizeWhereUniqueInput = Prisma.AtLeast<{
 export type SizeOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  images?: Prisma.SortOrderInput | Prisma.SortOrder
+  images?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
+  price?: Prisma.SortOrder
   productId?: Prisma.SortOrder
   _count?: Prisma.SizeCountOrderByAggregateInput
   _avg?: Prisma.SizeAvgOrderByAggregateInput
@@ -259,63 +270,71 @@ export type SizeScalarWhereWithAggregatesInput = {
   NOT?: Prisma.SizeScalarWhereWithAggregatesInput | Prisma.SizeScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Size"> | string
   name?: Prisma.StringWithAggregatesFilter<"Size"> | string
-  images?: Prisma.StringNullableWithAggregatesFilter<"Size"> | string | null
+  images?: Prisma.StringNullableListFilter<"Size">
   quantity?: Prisma.IntWithAggregatesFilter<"Size"> | number
+  price?: Prisma.DecimalWithAggregatesFilter<"Size"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   productId?: Prisma.StringWithAggregatesFilter<"Size"> | string
 }
 
 export type SizeCreateInput = {
   id?: string
   name: string
-  images?: string | null
+  images?: Prisma.SizeCreateimagesInput | string[]
   quantity: number
+  price: runtime.Decimal | runtime.DecimalJsLike | number | string
   product: Prisma.ProductCreateNestedOneWithoutSizesInput
 }
 
 export type SizeUncheckedCreateInput = {
   id?: string
   name: string
-  images?: string | null
+  images?: Prisma.SizeCreateimagesInput | string[]
   quantity: number
+  price: runtime.Decimal | runtime.DecimalJsLike | number | string
   productId: string
 }
 
 export type SizeUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  images?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  images?: Prisma.SizeUpdateimagesInput | string[]
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   product?: Prisma.ProductUpdateOneRequiredWithoutSizesNestedInput
 }
 
 export type SizeUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  images?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  images?: Prisma.SizeUpdateimagesInput | string[]
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type SizeCreateManyInput = {
   id?: string
   name: string
-  images?: string | null
+  images?: Prisma.SizeCreateimagesInput | string[]
   quantity: number
+  price: runtime.Decimal | runtime.DecimalJsLike | number | string
   productId: string
 }
 
 export type SizeUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  images?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  images?: Prisma.SizeUpdateimagesInput | string[]
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
 }
 
 export type SizeUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  images?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  images?: Prisma.SizeUpdateimagesInput | string[]
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
@@ -334,31 +353,34 @@ export type SizeCountOrderByAggregateInput = {
   name?: Prisma.SortOrder
   images?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
+  price?: Prisma.SortOrder
   productId?: Prisma.SortOrder
 }
 
 export type SizeAvgOrderByAggregateInput = {
   quantity?: Prisma.SortOrder
+  price?: Prisma.SortOrder
 }
 
 export type SizeMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  images?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
+  price?: Prisma.SortOrder
   productId?: Prisma.SortOrder
 }
 
 export type SizeMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  images?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
+  price?: Prisma.SortOrder
   productId?: Prisma.SortOrder
 }
 
 export type SizeSumOrderByAggregateInput = {
   quantity?: Prisma.SortOrder
+  price?: Prisma.SortOrder
 }
 
 export type SizeCreateNestedManyWithoutProductInput = {
@@ -403,30 +425,29 @@ export type SizeUncheckedUpdateManyWithoutProductNestedInput = {
   deleteMany?: Prisma.SizeScalarWhereInput | Prisma.SizeScalarWhereInput[]
 }
 
-export type NullableStringFieldUpdateOperationsInput = {
-  set?: string | null
+export type SizeCreateimagesInput = {
+  set: string[]
 }
 
-export type IntFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
+export type SizeUpdateimagesInput = {
+  set?: string[]
+  push?: string | string[]
 }
 
 export type SizeCreateWithoutProductInput = {
   id?: string
   name: string
-  images?: string | null
+  images?: Prisma.SizeCreateimagesInput | string[]
   quantity: number
+  price: runtime.Decimal | runtime.DecimalJsLike | number | string
 }
 
 export type SizeUncheckedCreateWithoutProductInput = {
   id?: string
   name: string
-  images?: string | null
+  images?: Prisma.SizeCreateimagesInput | string[]
   quantity: number
+  price: runtime.Decimal | runtime.DecimalJsLike | number | string
 }
 
 export type SizeCreateOrConnectWithoutProductInput = {
@@ -461,37 +482,42 @@ export type SizeScalarWhereInput = {
   NOT?: Prisma.SizeScalarWhereInput | Prisma.SizeScalarWhereInput[]
   id?: Prisma.StringFilter<"Size"> | string
   name?: Prisma.StringFilter<"Size"> | string
-  images?: Prisma.StringNullableFilter<"Size"> | string | null
+  images?: Prisma.StringNullableListFilter<"Size">
   quantity?: Prisma.IntFilter<"Size"> | number
+  price?: Prisma.DecimalFilter<"Size"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   productId?: Prisma.StringFilter<"Size"> | string
 }
 
 export type SizeCreateManyProductInput = {
   id?: string
   name: string
-  images?: string | null
+  images?: Prisma.SizeCreateimagesInput | string[]
   quantity: number
+  price: runtime.Decimal | runtime.DecimalJsLike | number | string
 }
 
 export type SizeUpdateWithoutProductInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  images?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  images?: Prisma.SizeUpdateimagesInput | string[]
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
 }
 
 export type SizeUncheckedUpdateWithoutProductInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  images?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  images?: Prisma.SizeUpdateimagesInput | string[]
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
 }
 
 export type SizeUncheckedUpdateManyWithoutProductInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  images?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  images?: Prisma.SizeUpdateimagesInput | string[]
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
 }
 
 
@@ -501,6 +527,7 @@ export type SizeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   name?: boolean
   images?: boolean
   quantity?: boolean
+  price?: boolean
   productId?: boolean
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["size"]>
@@ -510,6 +537,7 @@ export type SizeSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   name?: boolean
   images?: boolean
   quantity?: boolean
+  price?: boolean
   productId?: boolean
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["size"]>
@@ -519,6 +547,7 @@ export type SizeSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   name?: boolean
   images?: boolean
   quantity?: boolean
+  price?: boolean
   productId?: boolean
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["size"]>
@@ -528,10 +557,11 @@ export type SizeSelectScalar = {
   name?: boolean
   images?: boolean
   quantity?: boolean
+  price?: boolean
   productId?: boolean
 }
 
-export type SizeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "images" | "quantity" | "productId", ExtArgs["result"]["size"]>
+export type SizeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "images" | "quantity" | "price" | "productId", ExtArgs["result"]["size"]>
 export type SizeInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
 }
@@ -550,8 +580,9 @@ export type $SizePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     name: string
-    images: string | null
+    images: string[]
     quantity: number
+    price: runtime.Decimal
     productId: string
   }, ExtArgs["result"]["size"]>
   composites: {}
@@ -979,8 +1010,9 @@ export interface Prisma__SizeClient<T, Null = never, ExtArgs extends runtime.Typ
 export interface SizeFieldRefs {
   readonly id: Prisma.FieldRef<"Size", 'String'>
   readonly name: Prisma.FieldRef<"Size", 'String'>
-  readonly images: Prisma.FieldRef<"Size", 'String'>
+  readonly images: Prisma.FieldRef<"Size", 'String[]'>
   readonly quantity: Prisma.FieldRef<"Size", 'Int'>
+  readonly price: Prisma.FieldRef<"Size", 'Decimal'>
   readonly productId: Prisma.FieldRef<"Size", 'String'>
 }
     

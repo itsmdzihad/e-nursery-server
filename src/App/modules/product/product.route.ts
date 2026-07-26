@@ -1,8 +1,14 @@
+import validateRequest from "../../middleware/validateRequest.js";
 import { productController } from "./product.controller.js";
 import { Router } from "express";
+import { productValidation } from "./product.validation.js";
 
 const productRoute = Router();
 
-productRoute.post("/", productController.createProduct);
+productRoute.post(
+  "/",
+  validateRequest(productValidation.createProduct),
+  productController.createProduct,
+);
 
 export default productRoute;

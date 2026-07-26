@@ -3,18 +3,19 @@ model Product {
     name        String
     description String
     images      String[]
-    price       String
-    quantity    String
+    price       Decimal  @db.Decimal(10, 2)
+    quantity    Int
     sizes       Size[]
     createAt    DateTime @default(now())
     updateAt    DateTime @updatedAt
 }
 
 model Size {
-    id        String  @id @default(uuid())
+    id        String   @id @default(uuid())
     name      String
-    images    String?
+    images    String[]
     quantity  Int
+    price     Decimal  @db.Decimal(10, 2)
     productId String
-    product   Product @relation(fields: [productId], references: [id])
+    product   Product  @relation(fields: [productId], references: [id])
 }

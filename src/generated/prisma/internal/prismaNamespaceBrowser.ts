@@ -91,6 +91,7 @@ export const SizeScalarFieldEnum = {
   name: 'name',
   images: 'images',
   quantity: 'quantity',
+  price: 'price',
   productId: 'productId'
 } as const
 
