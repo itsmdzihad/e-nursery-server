@@ -5,13 +5,16 @@ import { authService } from "./auth.services.js";
 const userRegistration = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const result = await authService.registerUser(req.body);
-    console.log(result);
+
+    return result;
   },
 );
 
 const userLogin = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    console.log(req.body);
+    const result = await authService.loginUser(req.body);
+
+    return result;
   },
 );
 export const authController = {

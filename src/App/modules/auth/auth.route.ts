@@ -12,6 +12,10 @@ authRoute.post(
   authController.userRegistration,
 );
 
-authRoute.post("/login", authController.userLogin);
+authRoute.post(
+  "/login",
+  validateRequest(authValidation.loginUserSchema),
+  authController.userLogin,
+);
 
 export default authRoute;

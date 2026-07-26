@@ -6,6 +6,12 @@ const registerUserSchema = z.object({
   password: z.string(),
 });
 
+const loginUserSchema = z.object({
+  email: z.string(),
+  password: z.string(),
+});
+
 export const authValidation = {
   registerUserSchema,
+  loginUserSchema,
 };
