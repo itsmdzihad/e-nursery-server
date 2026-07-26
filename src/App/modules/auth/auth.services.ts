@@ -1,6 +1,10 @@
 import { prisma } from "../../config/db.js";
 
-const registerUser = (payload: any) => {
+const registerUser = (payload: {
+  name: string;
+  email: string;
+  password: string;
+}) => {
   console.log();
   const data = prisma.user.create({
     data: {
@@ -13,7 +17,15 @@ const registerUser = (payload: any) => {
   return data;
 };
 
-const loginUser = (payload: any) => {};
+const loginUser = async (payload: { email: string; password: string }) => {
+  const result = await prisma.user.findFirst({
+    where: {
+      email: payload.email,
+    },
+  });
+
+  return result;
+};
 
 export const authService = {
   registerUser,
