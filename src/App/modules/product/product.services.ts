@@ -32,7 +32,21 @@ const getAllProduct = async () => {
   return data;
 };
 
+const getProductById = async (id: string) => {
+  const data = await prisma.product.findFirst({
+    where: {
+      id: id,
+    },
+    include: {
+      sizes: true,
+    },
+  });
+
+  return data;
+};
+
 export const productService = {
   createProduct,
   getAllProduct,
+  getProductById,
 };

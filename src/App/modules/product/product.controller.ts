@@ -30,7 +30,23 @@ const getAllProduct = catchAsync(
   },
 );
 
+const getProductById = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const id = req.params.id as string;
+    const result = await productService.getProductById(id);
+
+    sendRes({
+      res,
+      success: true,
+      message: "Fetch Product Successfully",
+      statusCode: 200,
+      data: result,
+    });
+  },
+);
+
 export const productController = {
   createProduct,
   getAllProduct,
+  getProductById,
 };

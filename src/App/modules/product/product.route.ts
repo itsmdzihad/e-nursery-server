@@ -12,5 +12,6 @@ productRoute.post(
 );
 
 productRoute.get("/", productController.getAllProduct);
+productRoute.get("/:id", productController.getProductById);
 
 export default productRoute;
