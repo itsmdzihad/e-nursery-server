@@ -4,6 +4,7 @@ import cors from "cors";
 import { prisma } from "./App/config/db.js";
 import authRoute from "./App/modules/auth/auth.route.js";
 import router from "./App/routes/index.js";
+import globalErrorHandler from "./App/middleware/globalErrorHandler.js";
 
 const app: Application = express();
 const port = 3000;
@@ -37,13 +38,6 @@ app.get("/", (req, res) => {
   });
 });
 
-app.use(((err, req, res, next) => {
-  console.log(err);
-  res.status(500).json({
-    success: false,
-    statusCode: 500,
-    message: "Something Went Wrong",
-  });
-}) as ErrorRequestHandler);
+app.use(globalErrorHandler);
 
 export default app;
