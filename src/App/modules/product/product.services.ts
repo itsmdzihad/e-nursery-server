@@ -22,6 +22,17 @@ const createProduct = async (payload: any) => {
   return data;
 };
 
+const getAllProduct = async () => {
+  const data = await prisma.product.findMany({
+    include: {
+      sizes: true,
+    },
+  });
+
+  return data;
+};
+
 export const productService = {
   createProduct,
+  getAllProduct,
 };

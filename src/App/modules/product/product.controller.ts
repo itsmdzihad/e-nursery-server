@@ -17,6 +17,20 @@ const createProduct = catchAsync(
   },
 );
 
+const getAllProduct = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const result = await productService.getAllProduct();
+    sendRes({
+      res,
+      success: true,
+      message: "Fetch All Product",
+      statusCode: 200,
+      data: result,
+    });
+  },
+);
+
 export const productController = {
   createProduct,
+  getAllProduct,
 };
