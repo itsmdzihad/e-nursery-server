@@ -45,8 +45,19 @@ const getProductById = async (id: string) => {
   return data;
 };
 
+const deleteProductById = async (id: string) => {
+  const data = await prisma.product.delete({
+    where: {
+      id,
+    },
+  });
+
+  return data;
+};
+
 export const productService = {
   createProduct,
   getAllProduct,
   getProductById,
+  deleteProductById,
 };
