@@ -55,9 +55,28 @@ const deleteProductById = async (id: string) => {
   return data;
 };
 
+const updateSizeBySizeId = async (payload: any[]) => {
+  const data = await prisma.$transaction(
+    payload.map((size) =>
+      prisma.size.update({
+        where: {
+          id: size.id,
+        },
+        data: {
+          name: size.name,
+          images: size.images,
+          quantity: Number(size.quantity),
+          price: new Prisma.Decimal(size.price),
+        },
+      }),
+    ),
+  );
+};
+
 export const productService = {
   createProduct,
   getAllProduct,
   getProductById,
   deleteProductById,
+  updateSizeBySizeId,
 };

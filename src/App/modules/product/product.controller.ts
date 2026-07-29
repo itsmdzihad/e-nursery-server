@@ -61,9 +61,23 @@ const deleteProductById = catchAsync(
   },
 );
 
+const updateSizeBySizeId = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const result = await productService.updateSizeBySizeId(req.body);
+    sendRes({
+      res,
+      success: true,
+      message: "Product Update Successfully",
+      statusCode: 200,
+      data: result,
+    });
+  },
+);
+
 export const productController = {
   createProduct,
   getAllProduct,
   getProductById,
   deleteProductById,
+  updateSizeBySizeId,
 };
