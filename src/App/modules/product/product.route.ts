@@ -19,5 +19,6 @@ productRoute.patch(
   validateRequest(productValidation.updateProduct),
   productController.updateProductById,
 );
+productRoute.delete("/size/:id", productController.deleteProductSizeById);
 
 export default productRoute;

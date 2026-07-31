@@ -134,7 +134,25 @@ const updateProductById = async (id: string, payload: any) => {
   return data;
 };
 
+const deleteProductSizeById = async (id: string) => {
+  const isSizeExist = await prisma.size.findUnique({
+    where: {
+      id,
+    },
+  });
 
+  if (!isSizeExist) {
+    throw new AppError(404, "Size Now Found");
+  }
+
+  const data = await prisma.size.delete({
+    where: {
+      id,
+    },
+  });
+
+  return data;
+};
 
 export const productService = {
   createProduct,
@@ -142,4 +160,5 @@ export const productService = {
   getProductById,
   deleteProductById,
   updateProductById,
+  deleteProductSizeById,
 };
