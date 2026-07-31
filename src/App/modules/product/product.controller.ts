@@ -61,9 +61,12 @@ const deleteProductById = catchAsync(
   },
 );
 
-const updateSizeBySizeId = catchAsync(
+const updateProductById = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const result = await productService.updateSizeBySizeId(req.body);
+    const result = await productService.updateProductById(
+      req.params.id as string,
+      req.body,
+    );
     sendRes({
       res,
       success: true,
@@ -79,5 +82,5 @@ export const productController = {
   getAllProduct,
   getProductById,
   deleteProductById,
-  updateSizeBySizeId,
+  updateProductById,
 };

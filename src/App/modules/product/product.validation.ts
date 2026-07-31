@@ -15,17 +15,26 @@ const createProduct = z.object({
   ),
 });
 
-const updateSizes = z.array(
-  z.object({
-    id: z.uuid(),
-    name: z.string().min(1),
-    images: z.array(z.string()).min(1),
-    quantity: z.coerce.number().int().nonnegative(),
-    price: z.coerce.number().positive(),
-  }),
-);
+const updateProduct = z.object({
+  name: z.string().optional(),
+  description: z.string().optional(),
+  images: z.array(z.string()).optional(),
+  price: z.coerce.number().positive().optional(),
+  quantity: z.coerce.number().int().nonnegative().optional(),
+  sizes: z
+    .array(
+      z.object({
+        id: z.uuid(),
+        name: z.string().optional(),
+        images: z.array(z.string()).optional(),
+        quantity: z.coerce.number().int().nonnegative().optional(),
+        price: z.coerce.number().positive().optional(),
+      }),
+    )
+    .optional(),
+});
 
 export const productValidation = {
   createProduct,
-  updateSizes,
+  updateProduct,
 };
