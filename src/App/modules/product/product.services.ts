@@ -142,7 +142,7 @@ const deleteProductSizeById = async (id: string) => {
   });
 
   if (!isSizeExist) {
-    throw new AppError(404, "Size Now Found");
+    throw new AppError(404, "size now Found");
   }
 
   const data = await prisma.size.delete({

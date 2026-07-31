@@ -8,8 +8,10 @@ type TSendRes<T> = {
   data: T;
 };
 
-function capitalizeFirstLetter(payload: string) {
-  return payload.charAt(0).toUpperCase() + payload.slice(1);
+export function capitalizeFirstLetter(text: string): string {
+  const normalized = text.trim().replace(/\s+/g, " ").toLowerCase();
+
+  return normalized.charAt(0).toUpperCase() + normalized.slice(1);
 }
 
 const sendRes = <T>(payload: TSendRes<T>) => {

@@ -1,3 +1,5 @@
+import { capitalizeFirstLetter } from "../utils/sendRes.js";
+
 class AppError extends Error {
   statusCode: number;
   stack: any;
@@ -5,7 +7,7 @@ class AppError extends Error {
   constructor(statusCode: number, message: string, stack: any = "") {
     super(message);
     this.statusCode = statusCode;
-    this.message = message;
+    this.message = capitalizeFirstLetter(message);
     if (stack) {
       this.stack = stack;
     } else {
