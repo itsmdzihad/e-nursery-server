@@ -134,6 +134,8 @@ const updateProductById = async (id: string, payload: any) => {
   return data;
 };
 
+
+
 export const productService = {
   createProduct,
   getAllProduct,
