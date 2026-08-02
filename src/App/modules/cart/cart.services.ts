@@ -1,4 +1,6 @@
+import httpStatus from "http-status";
 import { prisma } from "../../config/db.js";
+import AppError from "../../errors/AppError.js";
 
 const getAllCart = async () => {
   const data = await prisma.cart.findMany();
@@ -150,6 +152,63 @@ const addItemToCart = async (
   });
 };
 
+const updateCartItemQuantity = async (
+  userId: string,
+  cartItemId: string,
+  quantity: number,
+) => {
+  if (quantity <= 0) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "quantity must be greater than 0",
+    );
+  }
+
+  const cartItem = await prisma.cartItem.findUnique({
+    where: {
+      id: cartItemId,
+    },
+    include: {
+      cart: true,
+      size: true,
+      product: true,
+    },
+  });
+
+  if (!cartItem) {
+    throw new AppError(httpStatus.NOT_FOUND, "cart item not found");
+  }
+
+  if (cartItem.cart.userId !== userId) {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      "you are not authorized to update this cart item",
+    );
+  }
+
+  if (quantity > cartItem.size.quantity) {
+    throw new AppError(httpStatus.BAD_REQUEST, "insufficient stock");
+  }
+
+  const updatedCartItem = await prisma.cartItem.update({
+    where: {
+      id: cartItemId,
+    },
+    data: {
+      quantity,
+    },
+    include: {
+      product: true,
+      size: true,
+    },
+  });
+
+  return updatedCartItem;
+};
+
 export const cartService = {
   getAllCart,
+  getCartById,
+  getMyCart,
+  addItemToCart,
 };
