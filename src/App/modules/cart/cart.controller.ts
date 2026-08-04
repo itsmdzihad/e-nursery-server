@@ -96,6 +96,20 @@ const removeCartItem = catchAsync(
   },
 );
 
+const clearCart = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const result = await cartService.clearCart(req.params.userId as string);
+
+    sendRes({
+      res,
+      success: true,
+      message: "Clear cart successfully",
+      statusCode: httpStatus.OK,
+      data: result,
+    });
+  },
+);
+
 export const cartController = {
   getAllCart,
   addItemToCart,
@@ -103,4 +117,5 @@ export const cartController = {
   getMyCart,
   updateCartItemQuantity,
   removeCartItem,
+  clearCart,
 };
