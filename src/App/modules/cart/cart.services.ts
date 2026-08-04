@@ -206,9 +206,41 @@ const updateCartItemQuantity = async (
   return updatedCartItem;
 };
 
+const removeCartItem = async (userId: string, cartItemId: string) => {
+  const cartItem = await prisma.cartItem.findUnique({
+    where: {
+      id: cartItemId,
+    },
+    include: {
+      cart: true,
+    },
+  });
+
+  if (!cartItem) {
+    throw new AppError(httpStatus.NOT_FOUND, "cart item not found");
+  }
+
+  if (cartItem.cart.userId !== userId) {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      "you are not authorized to remove this cart item",
+    );
+  }
+
+  await prisma.cartItem.delete({
+    where: {
+      id: cartItemId,
+    },
+  });
+
+  return null;
+};
+
 export const cartService = {
   getAllCart,
   getCartById,
   getMyCart,
   addItemToCart,
+  updateCartItemQuantity,
+  removeCartItem,
 };
