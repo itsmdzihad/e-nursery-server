@@ -17,6 +17,26 @@ const getAllCart = catchAsync(
   },
 );
 
+const addItemToCart = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { userId, sizeId, quantity } = req.body;
+    const result = await cartService.addItemToCart({
+      userId,
+      sizeId,
+      quantity,
+    });
+
+    sendRes({
+      res,
+      success: true,
+      message: "Item added to cart",
+      statusCode: 200,
+      data: result,
+    });
+  },
+);
+
 export const cartController = {
   getAllCart,
+  addItemToCart,
 };

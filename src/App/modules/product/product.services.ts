@@ -9,7 +9,10 @@ const createProduct = async (payload: any) => {
       description: payload.description,
       images: payload.images,
       price: new Prisma.Decimal(payload.price),
-      quantity: Number(payload.quantity),
+      quantity: payload.sizes.reduce(
+        (total: number, size: any) => total + Number(size.quantity),
+        0,
+      ),
       sizes: {
         create: payload.sizes.map((size: any) => ({
           name: size.name,
