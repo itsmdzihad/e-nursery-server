@@ -10,6 +10,10 @@ const getAllCart = async () => {
     },
   });
 
+  if (!data) {
+    throw new AppError(httpStatus.NOT_FOUND, "Cart is Empty");
+  }
+
   return data;
 };
 
@@ -29,7 +33,7 @@ const getCartById = async (cartId: string) => {
   });
 
   if (!cart) {
-    throw new Error("Cart not found");
+    throw new AppError(httpStatus.NOT_FOUND, "Cart not found");
   }
 
   return cart;

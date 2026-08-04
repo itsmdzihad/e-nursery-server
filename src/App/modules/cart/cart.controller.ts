@@ -36,7 +36,22 @@ const addItemToCart = catchAsync(
   },
 );
 
+const getCartById = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const result = await cartService.getCartById(req.params.id as string);
+
+    sendRes({
+      res,
+      success: true,
+      message: "Fetch Cart Successfully",
+      statusCode: 200,
+      data: result,
+    });
+  },
+);
+
 export const cartController = {
   getAllCart,
   addItemToCart,
+  getCartById,
 };
