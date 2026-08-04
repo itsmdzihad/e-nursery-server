@@ -110,6 +110,20 @@ const clearCart = catchAsync(
   },
 );
 
+const deleteCart = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const result = await cartService.deleteCart(req.params.cartId as string);
+
+    sendRes({
+      res,
+      success: true,
+      message: "Cart Delete Successfully",
+      statusCode: httpStatus.OK,
+      data: result,
+    });
+  },
+);
+
 export const cartController = {
   getAllCart,
   addItemToCart,
@@ -118,4 +132,5 @@ export const cartController = {
   updateCartItemQuantity,
   removeCartItem,
   clearCart,
+  deleteCart,
 };
