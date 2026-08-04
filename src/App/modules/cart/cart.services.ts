@@ -162,11 +162,12 @@ const addItemToCart = async (payload: {
   });
 };
 
-const updateCartItemQuantity = async (
-  userId: string,
-  cartItemId: string,
-  quantity: number,
-) => {
+const updateCartItemQuantity = async (payload: {
+  userId: string;
+  cartItemId: string;
+  quantity: number;
+}) => {
+  const { userId, cartItemId, quantity } = payload;
   if (quantity <= 0) {
     throw new AppError(
       httpStatus.BAD_REQUEST,

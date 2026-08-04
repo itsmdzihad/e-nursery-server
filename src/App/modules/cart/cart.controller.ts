@@ -65,9 +65,24 @@ const getMyCart = catchAsync(
   },
 );
 
+const updateCartItemQuantity = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const result = await cartService.updateCartItemQuantity(req.body);
+
+    sendRes({
+      res,
+      success: true,
+      message: "Quantity updated Successfully",
+      statusCode: httpStatus.OK,
+      data: result,
+    });
+  },
+);
+
 export const cartController = {
   getAllCart,
   addItemToCart,
   getCartById,
   getMyCart,
+  updateCartItemQuantity,
 };
