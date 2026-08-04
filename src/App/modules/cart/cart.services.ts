@@ -217,7 +217,11 @@ const updateCartItemQuantity = async (payload: {
   return updatedCartItem;
 };
 
-const removeCartItem = async (userId: string, cartItemId: string) => {
+const removeCartItem = async (payload: {
+  userId: string;
+  cartItemId: string;
+}) => {
+  const { userId, cartItemId } = payload;
   const cartItem = await prisma.cartItem.findUnique({
     where: {
       id: cartItemId,

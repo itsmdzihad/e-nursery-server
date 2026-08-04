@@ -7,6 +7,7 @@ cartRoute.get("/", cartController.getAllCart);
 cartRoute.post("/", cartController.addItemToCart);
 cartRoute.get("/:id", cartController.getCartById);
 cartRoute.get("/userId/:userId", cartController.getMyCart);
-cartRoute.patch("/", cartController.updateCartItemQuantity);
+cartRoute.patch("/item", cartController.updateCartItemQuantity);
+cartRoute.delete("/item/:cartItemId", cartController.removeCartItem);
 
 export default cartRoute;
