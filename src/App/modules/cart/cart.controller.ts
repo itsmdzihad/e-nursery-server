@@ -1,3 +1,4 @@
+import httpStatus from "http-status";
 import { NextFunction, Request, Response } from "express";
 import catchAsync from "../../utils/catchAsync.js";
 import { cartService } from "./cart.services.js";
@@ -50,8 +51,23 @@ const getCartById = catchAsync(
   },
 );
 
+const getMyCart = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const result = await cartService.getMyCart(req.params.userId as string);
+
+    sendRes({
+      res,
+      success: true,
+      message: "Fetch My cart details",
+      statusCode: httpStatus.OK,
+      data: result,
+    });
+  },
+);
+
 export const cartController = {
   getAllCart,
   addItemToCart,
   getCartById,
+  getMyCart,
 };
