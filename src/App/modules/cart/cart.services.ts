@@ -3,7 +3,12 @@ import { prisma } from "../../config/db.js";
 import AppError from "../../errors/AppError.js";
 
 const getAllCart = async () => {
-  const data = await prisma.cart.findMany();
+  const data = await prisma.cart.findMany({
+    include: {
+      user: true,
+      items: true,
+    },
+  });
 
   return data;
 };
