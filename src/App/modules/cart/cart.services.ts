@@ -284,6 +284,43 @@ const deleteCart = async (cartId: string) => {
   };
 };
 
+const calculateCartSummary = async (userId: string) => {
+  const cart = await prisma.cart.findUnique({
+    where: {
+      userId,
+    },
+    include: {
+      items: {
+        include: {
+          product: true,
+          size: true,
+        },
+      },
+    },
+  });
+
+  if (!cart) {
+    throw new AppError(httpStatus.NOT_FOUND, "cart not found");
+  }
+
+  let totalItems = 0;
+  let subtotal = 0;
+
+  cart.items.forEach((item) => {
+    totalItems += item.quantity;
+    subtotal += Number(item.size.price) * item.quantity;
+  });
+
+  return {
+    totalItems,
+    subtotal,
+    shipping: 0,
+    discount: 0,
+    tax: 0,
+    total: subtotal,
+  };
+};
+
 export const cartService = {
   getAllCart,
   getCartById,
@@ -293,4 +330,5 @@ export const cartService = {
   removeCartItem,
   clearCart,
   deleteCart,
+  calculateCartSummary,
 };
