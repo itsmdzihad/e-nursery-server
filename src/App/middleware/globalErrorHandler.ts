@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status";
 import { nodeEnv } from "../config/index.js";
+import { capitalizeFirstLetter } from "../utils/sendRes.js";
 
 const globalErrorHandler = (
   err: any,
@@ -15,6 +16,12 @@ const globalErrorHandler = (
   let success = false;
   let message = err.message || "Something went wrong!";
   let error = err;
+
+  if (err.name === "ZodError") {
+    message = capitalizeFirstLetter(
+      message.match(/expected\s+\w+,\s+received\s+\w+/i)[0],
+    );
+  }
 
   res.status(statusCode).json({
     success,
