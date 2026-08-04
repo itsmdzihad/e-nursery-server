@@ -6,6 +6,13 @@ const addItemToCart = z.object({
   quantity: z.number(),
 });
 
+const updateCartItemQuantity = z.object({
+  userId: z.string(),
+  cartItemId: z.string(),
+  quantity: z.number(),
+});
+
 export const cartValidation = {
   addItemToCart,
+  updateCartItemQuantity,
 };

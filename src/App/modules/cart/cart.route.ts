@@ -14,7 +14,11 @@ cartRoute.post(
 cartRoute.get("/:id", cartController.getCartById);
 cartRoute.delete("/:cartId", cartController.deleteCart);
 cartRoute.get("/userId/:userId", cartController.getMyCart);
-cartRoute.patch("/item", cartController.updateCartItemQuantity);
+cartRoute.patch(
+  "/item",
+  validateRequest(cartValidation.updateCartItemQuantity),
+  cartController.updateCartItemQuantity,
+);
 cartRoute.delete("/item/:cartItemId", cartController.removeCartItem);
 cartRoute.delete("/items/:userId", cartController.clearCart);
 cartRoute.get("/summary/:userId", cartController.calculateCartSummary);
