@@ -11,5 +11,5 @@ cartRoute.get("/userId/:userId", cartController.getMyCart);
 cartRoute.patch("/item", cartController.updateCartItemQuantity);
 cartRoute.delete("/item/:cartItemId", cartController.removeCartItem);
 cartRoute.delete("/items/:userId", cartController.clearCart);
-
+cartRoute.get("/summary/:userId", cartController.calculateCartSummary);
 export default cartRoute;

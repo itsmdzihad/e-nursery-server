@@ -124,6 +124,22 @@ const deleteCart = catchAsync(
   },
 );
 
+const calculateCartSummary = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const result = await cartService.calculateCartSummary(
+      req.params.userId as string,
+    );
+
+    sendRes({
+      res,
+      success: true,
+      message: "Fetch Cart Summary",
+      statusCode: httpStatus.OK,
+      data: result,
+    });
+  },
+);
+
 export const cartController = {
   getAllCart,
   addItemToCart,
@@ -133,4 +149,5 @@ export const cartController = {
   removeCartItem,
   clearCart,
   deleteCart,
+  calculateCartSummary,
 };
