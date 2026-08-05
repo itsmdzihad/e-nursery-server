@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status";
-import { nodeEnv } from "../config/index.js";
 import { capitalizeFirstLetter } from "../utils/sendRes.js";
+import config from "../config/index.js";
 
 const globalErrorHandler = (
   err: any,
@@ -26,8 +26,8 @@ const globalErrorHandler = (
   res.status(statusCode).json({
     success,
     message,
-    error: nodeEnv == "dev" ? error : null,
-    stack: nodeEnv === "dev" ? err?.stack : null,
+    error: config.nodeEnv == "dev" ? error : null,
+    stack: config.nodeEnv === "dev" ? err?.stack : null,
   });
 };
 

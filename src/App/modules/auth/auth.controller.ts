@@ -1,18 +1,23 @@
+import { tokenHelper } from "./../../utils/tokenHelper.js";
 import { NextFunction, Request, Response } from "express";
 import catchAsync from "../../utils/catchAsync.js";
 import { authService } from "./auth.services.js";
 import sendRes from "../../utils/sendRes.js";
-import createToken from "../../utils/createToken.js";
+import config from "../../config/index.js";
 
 const userRegistration = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const result = await authService.registerUser(req.body);
 
-    const token = createToken({
-      id: result.id,
-      email: result.email,
-      role: result.role,
-    });
+    const token = tokenHelper.createAccessToken(
+      {
+        id: result.id,
+        email: result.email,
+        role: result.role,
+      },
+      config.secret,
+      "1d",
+    );
 
     res.cookie("accessToken", token, {
       httpOnly: true,
@@ -35,11 +40,15 @@ const userLogin = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const result = await authService.loginUser(req.body);
 
-    const token = createToken({
-      id: result.id,
-      email: result.email,
-      role: result.role,
-    });
+    const token = tokenHelper.createAccessToken(
+      {
+        id: result.id,
+        email: result.email,
+        role: result.role,
+      },
+      config.secret,
+      "1d",
+    );
 
     res.cookie("accessToken", token, {
       httpOnly: true,
