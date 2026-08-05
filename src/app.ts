@@ -5,6 +5,7 @@ import { prisma } from "./App/config/db.js";
 import authRoute from "./App/modules/auth/auth.route.js";
 import router from "./App/routes/index.js";
 import globalErrorHandler from "./App/middleware/globalErrorHandler.js";
+import cookieParser from "cookie-parser";
 
 const app: Application = express();
 const port = 3000;
@@ -12,6 +13,7 @@ const port = 3000;
 //parsers
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
 
 const connect = async () => {
   try {
