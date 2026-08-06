@@ -257,7 +257,37 @@ const getRootCategories = async () => {
 
   return categories;
 };
-const getChildCategories = () => {};
+
+const getChildCategories = async (categoryId: string) => {
+  const category = await prisma.category.findUnique({
+    where: {
+      id: categoryId,
+    },
+  });
+
+  if (!category) {
+    throw new AppError(httpStatus.NOT_FOUND, "Category not found");
+  }
+
+  const childCategories = await prisma.category.findMany({
+    where: {
+      parentId: categoryId,
+    },
+    include: {
+      _count: {
+        select: {
+          children: true,
+          products: true,
+        },
+      },
+    },
+    orderBy: {
+      name: "asc",
+    },
+  });
+
+  return childCategories;
+};
 const moveCategory = () => {};
 const getCategoryBySlug = () => {};
 const checkSlugAvailability = () => {};
