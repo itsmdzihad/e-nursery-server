@@ -9,6 +9,8 @@ model Product {
     createAt    DateTime   @default(now())
     updateAt    DateTime   @updatedAt
     cartItems   CartItem[]
+    category    Category?  @relation(fields: [categoryId], references: [id])
+    categoryId  String?
 }
 
 model Size {
