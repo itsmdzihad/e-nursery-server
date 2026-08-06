@@ -363,9 +363,50 @@ const getCategoryBySlug = async (slug: string) => {
   return category;
 };
 
-const checkSlugAvailability = () => {};
+const checkSlugAvailability = async (slug: string) => {
+  const category = await prisma.category.findUnique({
+    where: {
+      slug,
+    },
+    select: {
+      id: true,
+    },
+  });
 
-const getProductsByCategory = () => {};
+  return {
+    available: !category,
+  };
+};
+const getProductsByCategory = async (categoryId: string) => {
+  const category = await prisma.category.findUnique({
+    where: {
+      id: categoryId,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (!category) {
+    throw new AppError(httpStatus.NOT_FOUND, "Category not found");
+  }
+
+  const products = await prisma.product.findMany({
+    where: {
+      categoryId,
+    },
+    include: {
+      category: true,
+      sizes: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  return products;
+};
+
 const getProductsWithSubCategories = () => {};
 
 const countProducts = () => {};
