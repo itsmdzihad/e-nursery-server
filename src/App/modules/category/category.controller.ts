@@ -1,14 +1,48 @@
 import { NextFunction, Request, Response } from "express";
 import catchAsync from "../../utils/catchAsync.js";
+import { categoryService } from "./category.services.js";
+import sendRes from "../../utils/sendRes.js";
 
 const createCategory = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {},
+  async (req: Request, res: Response, next: NextFunction) => {
+    const result = await categoryService.createCategory(req.body);
+
+    sendRes({
+      res,
+      success: true,
+      message: "Category Create Successfully",
+      statusCode: 200,
+      data: result,
+    });
+  },
 );
 const getAllCategories = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {},
+  async (req: Request, res: Response, next: NextFunction) => {
+    const result = await categoryService.getAllCategories();
+
+    sendRes({
+      res,
+      success: true,
+      message: "Category fetch Successfully",
+      statusCode: 200,
+      data: result,
+    });
+  },
 );
 const getSingleCategory = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {},
+  async (req: Request, res: Response, next: NextFunction) => {
+    const result = await categoryService.getSingleCategory(
+      req.params.categoryId as string,
+    );
+
+    sendRes({
+      res,
+      success: true,
+      message: "Category fetch Successfully",
+      statusCode: 200,
+      data: result,
+    });
+  },
 );
 const updateCategory = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {},
