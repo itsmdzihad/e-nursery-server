@@ -217,7 +217,26 @@ const deleteCategory = async (categoryId: string) => {
   });
 };
 
-const getCategoryTree = () => {};
+const getCategoryTree = async () => {
+  const categories = await prisma.category.findMany({
+    where: {
+      parentId: null,
+    },
+    include: {
+      children: {
+        include: {
+          children: true,
+        },
+      },
+    },
+    orderBy: {
+      name: "asc",
+    },
+  });
+
+  return categories;
+};
+
 const getRootCategories = () => {};
 const getChildCategories = () => {};
 const moveCategory = () => {};
