@@ -105,7 +105,80 @@ const getSingleCategory = async (categoryId: string) => {
   return category;
 };
 
-const updateCategory = () => {};
+const updateCategory = async (
+  categoryId: string,
+  payload: Partial<{
+    name: string;
+    description: string;
+    image: string;
+    parentId: string | null;
+  }>,
+) => {
+  return await prisma.$transaction(async (tx) => {
+    const category = await tx.category.findUnique({
+      where: {
+        id: categoryId,
+      },
+    });
+
+    if (!category) {
+      throw new AppError(httpStatus.NOT_FOUND, "Category not found");
+    }
+
+    if (payload.parentId) {
+      if (payload.parentId === categoryId) {
+        throw new AppError(
+          httpStatus.BAD_REQUEST,
+          "Category cannot be its own parent",
+        );
+      }
+
+      const parent = await tx.category.findUnique({
+        where: {
+          id: payload.parentId,
+        },
+      });
+
+      if (!parent) {
+        throw new AppError(httpStatus.NOT_FOUND, "Parent category not found");
+      }
+    }
+
+    let slug = category.slug;
+
+    if (payload.name && payload.name !== category.name) {
+      slug = slugify(payload.name, {
+        lower: true,
+        strict: true,
+        trim: true,
+      });
+
+      const existingCategory = await tx.category.findFirst({
+        where: {
+          slug,
+          NOT: {
+            id: categoryId,
+          },
+        },
+      });
+
+      if (existingCategory) {
+        throw new AppError(httpStatus.CONFLICT, "Category already exists");
+      }
+    }
+
+    return await tx.category.update({
+      where: {
+        id: categoryId,
+      },
+      data: {
+        ...payload,
+        slug,
+      },
+    });
+  });
+};
+
 const deleteCategory = () => {};
 
 const getCategoryTree = () => {};
