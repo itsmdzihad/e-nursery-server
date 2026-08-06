@@ -1,4 +1,6 @@
-const createCategory = () => {};
+const createCategory = () => {
+    
+};
 const getAllCategories = () => {};
 const getSingleCategory = () => {};
 const updateCategory = () => {};

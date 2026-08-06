@@ -227,11 +227,11 @@ export type CategoryOrderByWithRelationInput = {
 
 export type CategoryWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  name?: string
   slug?: string
   AND?: Prisma.CategoryWhereInput | Prisma.CategoryWhereInput[]
   OR?: Prisma.CategoryWhereInput[]
   NOT?: Prisma.CategoryWhereInput | Prisma.CategoryWhereInput[]
+  name?: Prisma.StringFilter<"Category"> | string
   description?: Prisma.StringNullableFilter<"Category"> | string | null
   image?: Prisma.StringNullableFilter<"Category"> | string | null
   parentId?: Prisma.StringNullableFilter<"Category"> | string | null
@@ -240,7 +240,7 @@ export type CategoryWhereUniqueInput = Prisma.AtLeast<{
   parent?: Prisma.XOR<Prisma.CategoryNullableScalarRelationFilter, Prisma.CategoryWhereInput> | null
   children?: Prisma.CategoryListRelationFilter
   products?: Prisma.ProductListRelationFilter
-}, "id" | "name" | "slug">
+}, "id" | "slug">
 
 export type CategoryOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -402,6 +402,11 @@ export type CategoryMinOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
 }
 
+export type CategoryScalarRelationFilter = {
+  is?: Prisma.CategoryWhereInput
+  isNot?: Prisma.CategoryWhereInput
+}
+
 export type CategoryCreateNestedOneWithoutChildrenInput = {
   create?: Prisma.XOR<Prisma.CategoryCreateWithoutChildrenInput, Prisma.CategoryUncheckedCreateWithoutChildrenInput>
   connectOrCreate?: Prisma.CategoryCreateOrConnectWithoutChildrenInput
@@ -470,12 +475,10 @@ export type CategoryCreateNestedOneWithoutProductsInput = {
   connect?: Prisma.CategoryWhereUniqueInput
 }
 
-export type CategoryUpdateOneWithoutProductsNestedInput = {
+export type CategoryUpdateOneRequiredWithoutProductsNestedInput = {
   create?: Prisma.XOR<Prisma.CategoryCreateWithoutProductsInput, Prisma.CategoryUncheckedCreateWithoutProductsInput>
   connectOrCreate?: Prisma.CategoryCreateOrConnectWithoutProductsInput
   upsert?: Prisma.CategoryUpsertWithoutProductsInput
-  disconnect?: Prisma.CategoryWhereInput | boolean
-  delete?: Prisma.CategoryWhereInput | boolean
   connect?: Prisma.CategoryWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.CategoryUpdateToOneWithWhereWithoutProductsInput, Prisma.CategoryUpdateWithoutProductsInput>, Prisma.CategoryUncheckedUpdateWithoutProductsInput>
 }

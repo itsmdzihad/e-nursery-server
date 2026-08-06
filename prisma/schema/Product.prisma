@@ -6,11 +6,11 @@ model Product {
     price       Decimal    @db.Decimal(10, 2)
     quantity    Int
     sizes       Size[]
-    createAt    DateTime   @default(now())
-    updateAt    DateTime   @updatedAt
+    createdAt   DateTime   @default(now())
+    updatedAt   DateTime   @updatedAt
     cartItems   CartItem[]
-    category    Category?  @relation(fields: [categoryId], references: [id])
-    categoryId  String?
+    category    Category   @relation(fields: [categoryId], references: [id])
+    categoryId  String
 }
 
 model Size {

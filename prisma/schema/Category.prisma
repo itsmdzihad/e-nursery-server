@@ -1,14 +1,17 @@
 model Category {
     id          String     @id @default(uuid())
-    name        String     @unique
+    name        String
     slug        String     @unique
     description String?
     image       String?
     parentId    String?
-    parent      Category?  @relation("sub-category", fields: [parentId], references: [id])
+    parent      Category?  @relation("sub-category", fields: [parentId], references: [id], onDelete: SetNull)
     children    Category[] @relation("sub-category")
     products    Product[]
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    @@index([parentId])
+    @@index([slug])
 }
