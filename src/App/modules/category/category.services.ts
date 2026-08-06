@@ -407,10 +407,98 @@ const getProductsByCategory = async (categoryId: string) => {
   return products;
 };
 
-const getProductsWithSubCategories = () => {};
+const getProductsWithSubCategories = async (categoryId: string) => {
+  const category = await prisma.category.findUnique({
+    where: {
+      id: categoryId,
+    },
+    include: {
+      children: {
+        select: {
+          id: true,
+        },
+      },
+    },
+  });
 
-const countProducts = () => {};
-const countChildren = () => {};
+  if (!category) {
+    throw new AppError(httpStatus.NOT_FOUND, "Category not found");
+  }
+
+  const categoryIds = [
+    category.id,
+    ...category.children.map((child) => child.id),
+  ];
+
+  const products = await prisma.product.findMany({
+    where: {
+      categoryId: {
+        in: categoryIds,
+      },
+    },
+    include: {
+      category: true,
+      sizes: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  return products;
+};
+const countProducts = async (categoryId: string) => {
+  const category = await prisma.category.findUnique({
+    where: {
+      id: categoryId,
+    },
+    select: {
+      id: true,
+      name: true,
+      _count: {
+        select: {
+          products: true,
+        },
+      },
+    },
+  });
+
+  if (!category) {
+    throw new AppError(httpStatus.NOT_FOUND, "Category not found");
+  }
+
+  return {
+    categoryId: category.id,
+    categoryName: category.name,
+    productCount: category._count.products,
+  };
+};
+const countChildren = async (categoryId: string) => {
+  const category = await prisma.category.findUnique({
+    where: {
+      id: categoryId,
+    },
+    select: {
+      id: true,
+      name: true,
+      _count: {
+        select: {
+          children: true,
+        },
+      },
+    },
+  });
+
+  if (!category) {
+    throw new AppError(httpStatus.NOT_FOUND, "Category not found");
+  }
+
+  return {
+    categoryId: category.id,
+    categoryName: category.name,
+    childrenCount: category._count.children,
+  };
+};
 
 export const categoryService = {
   createCategory,
