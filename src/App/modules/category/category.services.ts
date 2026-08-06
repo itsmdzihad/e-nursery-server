@@ -179,7 +179,43 @@ const updateCategory = async (
   });
 };
 
-const deleteCategory = () => {};
+const deleteCategory = async (categoryId: string) => {
+  return await prisma.$transaction(async (tx) => {
+    const category = await tx.category.findUnique({
+      where: {
+        id: categoryId,
+      },
+      include: {
+        children: true,
+        products: true,
+      },
+    });
+
+    if (!category) {
+      throw new AppError(httpStatus.NOT_FOUND, "Category not found");
+    }
+
+    if (category.children.length > 0) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "Cannot delete category with subcategories",
+      );
+    }
+
+    if (category.products.length > 0) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "Cannot delete category with products",
+      );
+    }
+
+    return await tx.category.delete({
+      where: {
+        id: categoryId,
+      },
+    });
+  });
+};
 
 const getCategoryTree = () => {};
 const getRootCategories = () => {};
