@@ -74,7 +74,37 @@ const getAllCategories = async () => {
   return categories;
 };
 
-const getSingleCategory = () => {};
+const getSingleCategory = async (categoryId: string) => {
+  const category = await prisma.category.findUnique({
+    where: {
+      id: categoryId,
+    },
+    include: {
+      parent: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+        },
+      },
+      children: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+        },
+      },
+      products: true,
+    },
+  });
+
+  if (!category) {
+    throw new AppError(httpStatus.NOT_FOUND, "Category not found");
+  }
+
+  return category;
+};
+
 const updateCategory = () => {};
 const deleteCategory = () => {};
 
