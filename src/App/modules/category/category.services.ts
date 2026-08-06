@@ -48,8 +48,32 @@ const createCategory = async (payload: {
   });
 };
 
+const getAllCategories = async () => {
+  const categories = await prisma.category.findMany({
+    include: {
+      parent: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+        },
+      },
+      children: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
 
-const getAllCategories = () => {};
+  return categories;
+};
+
 const getSingleCategory = () => {};
 const updateCategory = () => {};
 const deleteCategory = () => {};
