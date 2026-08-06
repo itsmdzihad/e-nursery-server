@@ -20,9 +20,9 @@ const getAllCart = catchAsync(
 
 const addItemToCart = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { userId, sizeId, quantity } = req.body;
+    const { sizeId, quantity } = req.body;
     const result = await cartService.addItemToCart({
-      userId,
+      userId: req?.user?.id as string,
       sizeId,
       quantity,
     });
@@ -39,7 +39,7 @@ const addItemToCart = catchAsync(
 
 const getCartById = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const result = await cartService.getCartById(req.params.id as string);
+    const result = await cartService.getCartById(req.params.cartId as string);
 
     sendRes({
       res,
@@ -53,7 +53,8 @@ const getCartById = catchAsync(
 
 const getMyCart = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const result = await cartService.getMyCart(req.params.userId as string);
+    console.log("hello");
+    const result = await cartService.getMyCart(req?.user?.id as string);
 
     sendRes({
       res,
@@ -67,7 +68,11 @@ const getMyCart = catchAsync(
 
 const updateCartItemQuantity = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const result = await cartService.updateCartItemQuantity(req.body);
+    const result = await cartService.updateCartItemQuantity({
+      cartItemId: req.params.itemId as string,
+      quantity: req.body.quantity,
+      userId: req?.user?.id,
+    });
 
     sendRes({
       res,
@@ -82,8 +87,8 @@ const updateCartItemQuantity = catchAsync(
 const removeCartItem = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const result = await cartService.removeCartItem({
-      userId: req.body.userId as string,
-      cartItemId: req.params.cartItemId as string,
+      userId: req?.user?.id as string,
+      cartItemId: req.params.itemId as string,
     });
 
     sendRes({
@@ -98,7 +103,7 @@ const removeCartItem = catchAsync(
 
 const clearCart = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const result = await cartService.clearCart(req.params.userId as string);
+    const result = await cartService.clearCart(req?.user?.id as string);
 
     sendRes({
       res,
@@ -127,7 +132,7 @@ const deleteCart = catchAsync(
 const calculateCartSummary = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const result = await cartService.calculateCartSummary(
-      req.params.userId as string,
+      req?.user?.id as string,
     );
 
     sendRes({
