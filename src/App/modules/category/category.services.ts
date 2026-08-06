@@ -237,7 +237,26 @@ const getCategoryTree = async () => {
   return categories;
 };
 
-const getRootCategories = () => {};
+const getRootCategories = async () => {
+  const categories = await prisma.category.findMany({
+    where: {
+      parentId: null,
+    },
+    include: {
+      _count: {
+        select: {
+          children: true,
+          products: true,
+        },
+      },
+    },
+    orderBy: {
+      name: "asc",
+    },
+  });
+
+  return categories;
+};
 const getChildCategories = () => {};
 const moveCategory = () => {};
 const getCategoryBySlug = () => {};
