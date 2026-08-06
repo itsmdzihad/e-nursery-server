@@ -125,7 +125,7 @@ const moveCategory = catchAsync(
     sendRes({
       res,
       success: true,
-      message: "Category fetch Successfully",
+      message: "Category Move Successfully",
       statusCode: 200,
       data: result,
     });
@@ -170,7 +170,7 @@ const getProductsByCategory = catchAsync(
     sendRes({
       res,
       success: true,
-      message: "Category fetch Successfully",
+      message: "Product fetch Successfully",
       statusCode: 200,
       data: result,
     });
@@ -185,7 +185,7 @@ const getProductsWithSubCategories = catchAsync(
     sendRes({
       res,
       success: true,
-      message: "Category fetch Successfully",
+      message: "Product fetch Successfully",
       statusCode: 200,
       data: result,
     });
@@ -200,7 +200,7 @@ const countProducts = catchAsync(
     sendRes({
       res,
       success: true,
-      message: "Category fetch Successfully",
+      message: "Product Count Successfully",
       statusCode: 200,
       data: result,
     });
@@ -215,7 +215,7 @@ const countChildren = catchAsync(
     sendRes({
       res,
       success: true,
-      message: "Category fetch Successfully",
+      message: "Category count Successfully",
       statusCode: 200,
       data: result,
     });
