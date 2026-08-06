@@ -288,8 +288,81 @@ const getChildCategories = async (categoryId: string) => {
 
   return childCategories;
 };
-const moveCategory = () => {};
-const getCategoryBySlug = () => {};
+const moveCategory = async (categoryId: string, parentId: string | null) => {
+  return await prisma.$transaction(async (tx) => {
+    const category = await tx.category.findUnique({
+      where: {
+        id: categoryId,
+      },
+    });
+
+    if (!category) {
+      throw new AppError(httpStatus.NOT_FOUND, "Category not found");
+    }
+
+    if (parentId === categoryId) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "Category cannot be its own parent",
+      );
+    }
+
+    if (parentId) {
+      const parentCategory = await tx.category.findUnique({
+        where: {
+          id: parentId,
+        },
+      });
+
+      if (!parentCategory) {
+        throw new AppError(httpStatus.NOT_FOUND, "Parent category not found");
+      }
+    }
+
+    const updatedCategory = await tx.category.update({
+      where: {
+        id: categoryId,
+      },
+      data: {
+        parentId,
+      },
+    });
+
+    return updatedCategory;
+  });
+};
+
+const getCategoryBySlug = async (slug: string) => {
+  const category = await prisma.category.findUnique({
+    where: {
+      slug,
+    },
+    include: {
+      parent: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+        },
+      },
+      children: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+        },
+      },
+      products: true,
+    },
+  });
+
+  if (!category) {
+    throw new AppError(httpStatus.NOT_FOUND, "Category not found");
+  }
+
+  return category;
+};
+
 const checkSlugAvailability = () => {};
 
 const getProductsByCategory = () => {};
