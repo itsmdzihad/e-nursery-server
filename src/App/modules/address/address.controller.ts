@@ -98,7 +98,7 @@ const getDefaultAddress = catchAsync(
   },
 );
 
-export const addressService = {
+export const addressController = {
   createAddress,
   getAllAddresses,
   getMyAddresses,
