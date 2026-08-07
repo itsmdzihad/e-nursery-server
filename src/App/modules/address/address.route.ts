@@ -13,7 +13,11 @@ addressRoute.post(
 );
 
 // Read
-addressRoute.get("/", auth(Role.ADMIN), addressController.getAllAddresses);
+addressRoute.get(
+  "/",
+  auth(Role.ADMIN, Role.CUSTOMER),
+  addressController.getAllAddresses,
+);
 
 addressRoute.get(
   "/me",
