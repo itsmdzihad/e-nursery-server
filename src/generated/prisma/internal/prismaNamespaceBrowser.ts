@@ -51,6 +51,7 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
+  Address: 'Address',
   Cart: 'Cart',
   CartItem: 'CartItem',
   Category: 'Category',
@@ -73,6 +74,28 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 } as const)
 
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
+
+
+export const AddressScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  fullName: 'fullName',
+  phone: 'phone',
+  country: 'country',
+  division: 'division',
+  district: 'district',
+  upazila: 'upazila',
+  area: 'area',
+  postalCode: 'postalCode',
+  addressLine: 'addressLine',
+  landmark: 'landmark',
+  label: 'label',
+  isDefault: 'isDefault',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AddressScalarFieldEnum = (typeof AddressScalarFieldEnum)[keyof typeof AddressScalarFieldEnum]
 
 
 export const CartScalarFieldEnum = {

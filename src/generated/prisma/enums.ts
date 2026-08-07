@@ -9,6 +9,15 @@
 * 🟢 You can import this file directly.
 */
 
+export const AddressLabel = {
+  HOME: 'HOME',
+  OFFICE: 'OFFICE',
+  OTHER: 'OTHER'
+} as const
+
+export type AddressLabel = (typeof AddressLabel)[keyof typeof AddressLabel]
+
+
 export const Role = {
   CUSTOMER: 'CUSTOMER',
   ADMIN: 'ADMIN'
