@@ -3,6 +3,7 @@ import authRoute from "../modules/auth/auth.route.js";
 import productRoute from "../modules/product/product.route.js";
 import cartRoute from "../modules/cart/cart.route.js";
 import categoryRoute from "../modules/category/category.route.js";
+import addressRoute from "../modules/address/address.route.js";
 
 const router = Router();
 
@@ -22,6 +23,10 @@ const moduleRoutes = [
   {
     path: "/categories",
     route: categoryRoute,
+  },
+  {
+    path: "/addresses",
+    route: addressRoute,
   },
 ];
 
