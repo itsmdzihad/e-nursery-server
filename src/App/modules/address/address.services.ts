@@ -120,14 +120,159 @@ const getSingleAddress = async (
 
   return address;
 };
-const updateAddress = async () => {};
+const updateAddress = async (
+  addressId: string,
+  userId: string,
+  role: Role,
+  payload: Partial<{
+    fullName: string;
+    phone: string;
+    country: string;
+    division: string;
+    district: string;
+    upazila: string;
+    area: string;
+    addressLine: string;
+    postalCode: string;
+    isDefault: boolean;
+  }>,
+) => {
+  return await prisma.$transaction(async (tx) => {
+    const address = await tx.address.findUnique({
+      where: {
+        id: addressId,
+      },
+    });
 
-const deleteAddress = async () => {};
+    if (!address) {
+      throw new AppError(httpStatus.NOT_FOUND, "Address not found");
+    }
 
-const setDefaultAddress = async () => {};
+    if (role !== Role.ADMIN && address.userId !== userId) {
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        "You are not authorized to update this address",
+      );
+    }
 
-const getDefaultAddress = async () => {};
+    if (payload.isDefault) {
+      await tx.address.updateMany({
+        where: {
+          userId: address.userId,
+          isDefault: true,
+        },
+        data: {
+          isDefault: false,
+        },
+      });
+    }
 
+    const updatedAddress = await tx.address.update({
+      where: {
+        id: addressId,
+      },
+      data: payload,
+    });
+
+    return updatedAddress;
+  });
+};
+const deleteAddress = async (addressId: string, userId: string, role: Role) => {
+  return await prisma.$transaction(async (tx) => {
+    const address = await tx.address.findUnique({
+      where: {
+        id: addressId,
+      },
+    });
+
+    if (!address) {
+      throw new AppError(httpStatus.NOT_FOUND, "Address not found");
+    }
+
+    if (role !== Role.ADMIN && address.userId !== userId) {
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        "You are not authorized to delete this address",
+      );
+    }
+
+    await tx.address.delete({
+      where: {
+        id: addressId,
+      },
+    });
+
+    return null;
+  });
+};
+const setDefaultAddress = async (
+  addressId: string,
+  userId: string,
+  role: Role,
+) => {
+  return await prisma.$transaction(async (tx) => {
+    const address = await tx.address.findUnique({
+      where: {
+        id: addressId,
+      },
+    });
+
+    if (!address) {
+      throw new AppError(httpStatus.NOT_FOUND, "Address not found");
+    }
+
+    if (role !== Role.ADMIN && address.userId !== userId) {
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        "You are not authorized to update this address",
+      );
+    }
+
+    await tx.address.updateMany({
+      where: {
+        userId: address.userId,
+        isDefault: true,
+      },
+      data: {
+        isDefault: false,
+      },
+    });
+
+    const updatedAddress = await tx.address.update({
+      where: {
+        id: addressId,
+      },
+      data: {
+        isDefault: true,
+      },
+    });
+
+    return updatedAddress;
+  });
+};
+const getDefaultAddress = async (userId: string, role: Role) => {
+  const address = await prisma.address.findFirst({
+    where: {
+      ...(role === Role.ADMIN ? {} : { userId }),
+      isDefault: true,
+    },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+    },
+  });
+
+  if (!address) {
+    throw new AppError(httpStatus.NOT_FOUND, "Default address not found");
+  }
+
+  return address;
+};
 export const addressService = {
   createAddress,
   getAllAddresses,
