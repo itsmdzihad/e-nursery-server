@@ -72,48 +72,92 @@ const getSingleAddress = catchAsync(
 
 const updateAddress = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      throw new AppError(httpStatus.UNAUTHORIZED, "Authentication required");
+    }
+
+    const { id, role } = req?.user;
+
+    const result = await addressService.updateAddress(
+      req.params.addressId as string,
+      id,
+      role,
+      req.body,
+    );
+
     sendRes({
       res,
-      success: false,
-      message: "init all controller",
-      statusCode: 400,
-      data: {},
+      success: true,
+      message: "Address Updated Successfully",
+      statusCode: 200,
+      data: result,
     });
   },
 );
 
 const deleteAddress = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      throw new AppError(httpStatus.UNAUTHORIZED, "Authentication required");
+    }
+
+    const { id, role } = req.user;
+
+    const result = await addressService.deleteAddress(
+      req.params.addressId as string,
+      id,
+      role,
+    );
+
     sendRes({
       res,
-      success: false,
-      message: "init all controller",
-      statusCode: 400,
-      data: {},
+      success: true,
+      message: "Address Delete Successfully",
+      statusCode: 200,
+      data: result,
     });
   },
 );
 
 const setDefaultAddress = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      throw new AppError(httpStatus.UNAUTHORIZED, "Authentication required");
+    }
+
+    const { id, role } = req.user;
+    const result = await addressService.setDefaultAddress(
+      req.params.addressId as string,
+      id,
+      role,
+    );
+
     sendRes({
       res,
-      success: false,
-      message: "init all controller",
-      statusCode: 400,
-      data: {},
+      success: true,
+      message: "Default Address Set Successfully",
+      statusCode: 200,
+      data: result,
     });
   },
 );
 
 const getDefaultAddress = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      throw new AppError(httpStatus.UNAUTHORIZED, "Authentication required");
+    }
+
+    const { id, role } = req.user;
+
+    const result = await addressService.getDefaultAddress(id, role);
+
     sendRes({
       res,
-      success: false,
-      message: "init all controller",
-      statusCode: 400,
-      data: {},
+      success: true,
+      message: "Address Fetch Successfully",
+      statusCode: 200,
+      data: result,
     });
   },
 );
