@@ -10,4 +10,5 @@ model User {
     updatedAt  DateTime  @updatedAt
     cart       Cart?
     addresses  Address[]
+    orders     Order[]
 }

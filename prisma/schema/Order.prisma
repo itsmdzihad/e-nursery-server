@@ -1,0 +1,61 @@
+model Order {
+    id String @id @default(uuid())
+
+    userId String
+    user   User   @relation(fields: [userId], references: [id])
+
+    addressId String?
+    address   Address? @relation(fields: [addressId], references: [id], onDelete: SetNull)
+
+    fullName String
+    phone    String
+
+    country     String
+    division    String
+    district    String
+    upazila     String?
+    area        String?
+    postalCode  String?
+    addressLine String
+    landmark    String?
+
+    subtotal    Decimal @db.Decimal(10, 2)
+    deliveryFee Decimal @db.Decimal(10, 2)
+    total       Decimal @db.Decimal(10, 2)
+
+    status        OrderStatus   @default(PENDING)
+    paymentStatus PaymentStatus @default(UNPAID)
+    paymentMethod PaymentMethod @default(COD)
+
+    items OrderItem[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([userId])
+    @@index([status])
+    @@index([paymentStatus])
+    @@index([createdAt])
+}
+
+enum OrderStatus {
+    PENDING
+    CONFIRMED
+    PROCESSING
+    SHIPPED
+    OUT_FOR_DELIVERY
+    DELIVERED
+    CANCELLED
+}
+
+enum PaymentStatus {
+    UNPAID
+    PAID
+    FAILED
+    REFUNDED
+}
+
+enum PaymentMethod {
+    COD
+    ONLINE
+}

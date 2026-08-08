@@ -1,5 +1,3 @@
-
-
 model CartItem {
   id         String     @id @default(uuid())
 

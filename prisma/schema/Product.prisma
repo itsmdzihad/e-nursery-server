@@ -1,25 +1,27 @@
 model Product {
-    id          String     @id @default(uuid())
+    id          String      @id @default(uuid())
     name        String
     description String
     images      String[]
-    price       Decimal    @db.Decimal(10, 2)
+    price       Decimal     @db.Decimal(10, 2)
     quantity    Int
     sizes       Size[]
-    createdAt   DateTime   @default(now())
-    updatedAt   DateTime   @updatedAt
+    createdAt   DateTime    @default(now())
+    updatedAt   DateTime    @updatedAt
     cartItems   CartItem[]
-    category    Category   @relation(fields: [categoryId], references: [id])
+    category    Category    @relation(fields: [categoryId], references: [id])
     categoryId  String
+    orderItems  OrderItem[]
 }
 
 model Size {
-    id        String     @id @default(uuid())
-    name      String
-    images    String[]
-    quantity  Int
-    price     Decimal    @db.Decimal(10, 2)
-    productId String
-    product   Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
-    cartItems CartItem[]
+    id         String      @id @default(uuid())
+    name       String
+    images     String[]
+    quantity   Int
+    price      Decimal     @db.Decimal(10, 2)
+    productId  String
+    product    Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+    cartItems  CartItem[]
+    orderItems OrderItem[]
 }

@@ -1,0 +1,25 @@
+model OrderItem {
+    id String @id @default(uuid())
+
+    orderId String
+    order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+    productId String
+    product   Product @relation(fields: [productId], references: [id])
+
+    sizeId String
+    size   Size   @relation(fields: [sizeId], references: [id])
+
+    productName String
+    sizeName    String
+
+    price    Decimal @db.Decimal(10, 2)
+    quantity Int
+    subtotal Decimal @db.Decimal(10, 2)
+
+    createdAt DateTime @default(now())
+
+    @@index([orderId])
+    @@index([productId])
+    @@index([sizeId])
+}
