@@ -5,6 +5,7 @@ const createProduct = z.object({
   description: z.string(),
   images: z.array(z.string()),
   price: z.number(),
+  categoryId: z.string(),
   sizes: z.array(
     z.object({
       name: z.string(),

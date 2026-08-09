@@ -1,8 +1,19 @@
+import httpStatus from "http-status";
 import { Prisma } from "../../../generated/prisma/client.js";
 import { prisma } from "../../config/db.js";
 import AppError from "../../errors/AppError.js";
 
 const createProduct = async (payload: any) => {
+  const category = await prisma.category.findUnique({
+    where: {
+      id: payload.categoryId,
+    },
+  });
+
+  if (!category) {
+    throw new AppError(httpStatus.NOT_FOUND, "Category not found");
+  }
+
   const data = await prisma.product.create({
     data: {
       name: payload.name,
@@ -13,6 +24,11 @@ const createProduct = async (payload: any) => {
         (total: number, size: any) => total + Number(size.quantity),
         0,
       ),
+      category: {
+        connect: {
+          id: payload.categoryId,
+        },
+      },
       sizes: {
         create: payload.sizes.map((size: any) => ({
           name: size.name,
@@ -30,6 +46,7 @@ const getAllProduct = async () => {
   const data = await prisma.product.findMany({
     include: {
       sizes: true,
+      category: true,
     },
   });
 
@@ -43,6 +60,7 @@ const getProductById = async (id: string) => {
     },
     include: {
       sizes: true,
+      category: true,
     },
   });
 
@@ -60,7 +78,7 @@ const deleteProductById = async (id: string) => {
 };
 
 const updateProductById = async (id: string, payload: any) => {
-  const { sizes, ...productData } = payload;
+  const { sizes, categoryId, ...productData } = payload;
 
   const data = await prisma.$transaction(async (tx) => {
     const existingProduct = await tx.product.findUnique({
@@ -68,7 +86,19 @@ const updateProductById = async (id: string, payload: any) => {
     });
 
     if (!existingProduct) {
-      throw new AppError(404, "Product Now Found");
+      throw new AppError(404, "Product Not Found");
+    }
+
+    if (categoryId !== undefined) {
+      const category = await tx.category.findUnique({
+        where: {
+          id: categoryId,
+        },
+      });
+
+      if (!category) {
+        throw new AppError(404, "Category Not Found");
+      }
     }
 
     const product = await tx.product.update({
@@ -76,7 +106,9 @@ const updateProductById = async (id: string, payload: any) => {
         id,
       },
       data: {
-        ...(productData.name !== undefined && { name: productData.name }),
+        ...(productData.name !== undefined && {
+          name: productData.name,
+        }),
         ...(productData.description !== undefined && {
           description: productData.description,
         }),
@@ -88,6 +120,13 @@ const updateProductById = async (id: string, payload: any) => {
         }),
         ...(productData.quantity !== undefined && {
           quantity: Number(productData.quantity),
+        }),
+        ...(categoryId !== undefined && {
+          category: {
+            connect: {
+              id: categoryId,
+            },
+          },
         }),
       },
     });
@@ -110,8 +149,12 @@ const updateProductById = async (id: string, payload: any) => {
               id: size.id,
             },
             data: {
-              ...(size.name !== undefined && { name: size.name }),
-              ...(size.images !== undefined && { images: size.images }),
+              ...(size.name !== undefined && {
+                name: size.name,
+              }),
+              ...(size.images !== undefined && {
+                images: size.images,
+              }),
               ...(size.quantity !== undefined && {
                 quantity: Number(size.quantity),
               }),
@@ -126,9 +169,10 @@ const updateProductById = async (id: string, payload: any) => {
 
     return tx.product.findUnique({
       where: {
-        id,
+        id: product.id,
       },
       include: {
+        category: true,
         sizes: true,
       },
     });
