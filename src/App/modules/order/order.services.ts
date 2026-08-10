@@ -478,8 +478,114 @@ const getOrdersByStatus = async (
     data: orders,
   };
 };
-const getOrderSummary = () => {};
+const getOrderSummary = async () => {
+  const [
+    totalOrders,
+    pendingOrders,
+    confirmedOrders,
+    processingOrders,
+    shippedOrders,
+    outForDeliveryOrders,
+    deliveredOrders,
+    cancelledOrders,
+    paidOrders,
+    unpaidOrders,
+    refundedOrders,
+    revenue,
+  ] = await prisma.$transaction([
+    prisma.order.count(),
 
+    prisma.order.count({
+      where: {
+        status: OrderStatus.PENDING,
+      },
+    }),
+
+    prisma.order.count({
+      where: {
+        status: OrderStatus.CONFIRMED,
+      },
+    }),
+
+    prisma.order.count({
+      where: {
+        status: OrderStatus.PROCESSING,
+      },
+    }),
+
+    prisma.order.count({
+      where: {
+        status: OrderStatus.SHIPPED,
+      },
+    }),
+
+    prisma.order.count({
+      where: {
+        status: OrderStatus.OUT_FOR_DELIVERY,
+      },
+    }),
+
+    prisma.order.count({
+      where: {
+        status: OrderStatus.DELIVERED,
+      },
+    }),
+
+    prisma.order.count({
+      where: {
+        status: OrderStatus.CANCELLED,
+      },
+    }),
+
+    prisma.order.count({
+      where: {
+        paymentStatus: PaymentStatus.PAID,
+      },
+    }),
+
+    prisma.order.count({
+      where: {
+        paymentStatus: PaymentStatus.UNPAID,
+      },
+    }),
+
+    prisma.order.count({
+      where: {
+        paymentStatus: PaymentStatus.REFUNDED,
+      },
+    }),
+
+    prisma.order.aggregate({
+      _sum: {
+        total: true,
+      },
+      where: {
+        paymentStatus: PaymentStatus.PAID,
+      },
+    }),
+  ]);
+
+  return {
+    orders: {
+      total: totalOrders,
+      pending: pendingOrders,
+      confirmed: confirmedOrders,
+      processing: processingOrders,
+      shipped: shippedOrders,
+      outForDelivery: outForDeliveryOrders,
+      delivered: deliveredOrders,
+      cancelled: cancelledOrders,
+    },
+
+    payments: {
+      paid: paidOrders,
+      unpaid: unpaidOrders,
+      refunded: refundedOrders,
+    },
+
+    revenue: revenue._sum.total ?? 0,
+  };
+};
 export const orderService = {
   createOrder,
   getAllOrders,
