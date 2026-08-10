@@ -1,5 +1,6 @@
 import { Decimal } from "@prisma/client/runtime/client";
 import { prisma } from "../../config/db.js";
+import AppError from "../../errors/AppError.js";
 
 const createOrder = async (
   userId: string,
@@ -24,7 +25,7 @@ const createOrder = async (
     });
 
     if (!cart || cart.items.length === 0) {
-      throw new Error("Cart is empty");
+      throw new AppError(404, "Cart is empty");
     }
 
     const address = await tx.address.findFirst({
@@ -35,7 +36,7 @@ const createOrder = async (
     });
 
     if (!address) {
-      throw new Error("Address not found");
+      throw new AppError(404, "Address not found");
     }
 
     let subtotal = new Decimal(0);
