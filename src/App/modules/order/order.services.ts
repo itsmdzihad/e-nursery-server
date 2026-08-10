@@ -1,7 +1,7 @@
 import { Decimal } from "@prisma/client/runtime/client";
 import { prisma } from "../../config/db.js";
 import AppError from "../../errors/AppError.js";
-import { OrderStatus, PaymentStatus } from "../../../generated/prisma/enums.js";
+import { OrderStatus, PaymentStatus, Role } from "../../../generated/prisma/enums.js";
 
 const createOrder = async (
   userId: string,
@@ -232,7 +232,47 @@ const getMyOrders = async (
   };
 };
 
-const getSingleOrder = () => {};
+const getSingleOrder = async (
+  orderId: string,
+  userId: string,
+  role: Role,
+) => {
+  const order = await prisma.order.findUnique({
+    where: {
+      id: orderId,
+    },
+    include: {
+      items: {
+        include: {
+          product: {
+            select: {
+              id: true,
+              name: true,
+              images: true,
+            },
+          },
+          size: {
+            select: {
+              id: true,
+              name: true,
+              images: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!order) {
+    throw new AppError(404, "Order not found");
+  }
+
+  if (role === Role.CUSTOMER && order.userId !== userId) {
+    throw new AppError(403, "You are not allowed to view this order");
+  }
+
+  return order;
+};
 
 const updateOrderStatus = () => {};
 
