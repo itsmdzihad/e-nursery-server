@@ -425,8 +425,59 @@ const updatePaymentStatus = async (
 
   return result;
 };
-const getOrdersByStatus = () => {};
 
+const getOrdersByStatus = async (
+  status: OrderStatus,
+  query: {
+    page?: string;
+    limit?: string;
+  },
+) => {
+  const page = Number(query.page) || 1;
+  const limit = Number(query.limit) || 10;
+
+  if (page < 1) {
+    throw new AppError(400, "Page must be greater than 0");
+  }
+
+  if (limit < 1 || limit > 100) {
+    throw new AppError(400, "Limit must be between 1 and 100");
+  }
+
+  const skip = (page - 1) * limit;
+
+  const [orders, total] = await prisma.$transaction([
+    prisma.order.findMany({
+      where: {
+        status,
+      },
+      skip,
+      take: limit,
+      orderBy: {
+        createdAt: "desc",
+      },
+      include: {
+        items: true,
+      },
+    }),
+
+    prisma.order.count({
+      where: {
+        status,
+      },
+    }),
+  ]);
+
+  return {
+    meta: {
+      page,
+      limit,
+      total,
+      totalPage: Math.ceil(total / limit),
+    },
+    data: orders,
+  };
+};
 const getOrderSummary = () => {};
 
 export const orderService = {
