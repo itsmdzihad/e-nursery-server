@@ -316,8 +316,73 @@ const updateOrderStatus = async (orderId: string, status: OrderStatus) => {
 
   return result;
 };
-const cancelOrder = () => {};
+const cancelOrder = async (
+  orderId: string,
+  userId: string,
+  reason?: string,
+) => {
+  const result = await prisma.$transaction(async (tx) => {
+    const order = await tx.order.findUnique({
+      where: {
+        id: orderId,
+      },
+      include: {
+        items: true,
+      },
+    });
 
+    if (!order) {
+      throw new AppError(404, "Order not found");
+    }
+
+    if (order.userId !== userId) {
+      throw new AppError(403, "You are not allowed to cancel this order");
+    }
+
+    if (
+      order.status !== OrderStatus.PENDING &&
+      order.status !== OrderStatus.CONFIRMED
+    ) {
+      throw new AppError(
+        400,
+        `Order cannot be cancelled when status is ${order.status}`,
+      );
+    }
+
+    if (order.paymentStatus === PaymentStatus.PAID) {
+      throw new AppError(400, "Paid order cannot be cancelled");
+    }
+
+    for (const item of order.items) {
+      await tx.size.update({
+        where: {
+          id: item.sizeId,
+        },
+        data: {
+          quantity: {
+            increment: item.quantity,
+          },
+        },
+      });
+    }
+
+    const cancelledOrder = await tx.order.update({
+      where: {
+        id: orderId,
+      },
+      data: {
+        status: OrderStatus.CANCELLED,
+      },
+      include: {
+        items: true,
+      },
+    });
+
+    return cancelledOrder;
+  });
+
+  return result;
+};
 const updatePaymentStatus = () => {};
 
 const getOrdersByStatus = () => {};
