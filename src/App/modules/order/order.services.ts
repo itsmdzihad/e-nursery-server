@@ -1,6 +1,7 @@
 import { Decimal } from "@prisma/client/runtime/client";
 import { prisma } from "../../config/db.js";
 import AppError from "../../errors/AppError.js";
+import { OrderStatus, PaymentStatus } from "../../../generated/prisma/enums.js";
 
 const createOrder = async (
   userId: string,
@@ -123,7 +124,56 @@ const createOrder = async (
   return result;
 };
 
-const getAllOrders = () => {};
+const getAllOrders = async (query: {
+  page?: string;
+  limit?: string;
+  status?: OrderStatus;
+  paymentStatus?: PaymentStatus;
+}) => {
+  const page = Number(query.page) || 1;
+  const limit = Number(query.limit) || 10;
+  const skip = (page - 1) * limit;
+
+  const where = {
+    ...(query.status && {
+      status: query.status,
+    }),
+    ...(query.paymentStatus && {
+      paymentStatus: query.paymentStatus,
+    }),
+  };
+
+  const [orders, total] = await prisma.$transaction([
+    prisma.order.findMany({
+      where,
+      skip,
+      take: limit,
+      orderBy: {
+        createdAt: "desc",
+      },
+      include: {
+        items: true,
+      },
+    }),
+    prisma.order.count({
+      where,
+    }),
+  ]);
+
+  if (!orders) {
+    throw new AppError(404, "Orders not found");
+  }
+
+  return {
+    meta: {
+      page,
+      limit,
+      total,
+      totalPage: Math.ceil(total / limit),
+    },
+    data: orders,
+  };
+};
 
 const getMyOrders = () => {};
 
