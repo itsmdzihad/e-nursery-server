@@ -1,7 +1,11 @@
 import { Decimal } from "@prisma/client/runtime/client";
 import { prisma } from "../../config/db.js";
 import AppError from "../../errors/AppError.js";
-import { OrderStatus, PaymentStatus, Role } from "../../../generated/prisma/enums.js";
+import {
+  OrderStatus,
+  PaymentStatus,
+  Role,
+} from "../../../generated/prisma/enums.js";
 
 const createOrder = async (
   userId: string,
@@ -232,11 +236,7 @@ const getMyOrders = async (
   };
 };
 
-const getSingleOrder = async (
-  orderId: string,
-  userId: string,
-  role: Role,
-) => {
+const getSingleOrder = async (orderId: string, userId: string, role: Role) => {
   const order = await prisma.order.findUnique({
     where: {
       id: orderId,
@@ -274,8 +274,48 @@ const getSingleOrder = async (
   return order;
 };
 
-const updateOrderStatus = () => {};
+const updateOrderStatus = async (orderId: string, status: OrderStatus) => {
+  const order = await prisma.order.findUnique({
+    where: {
+      id: orderId,
+    },
+  });
 
+  if (!order) {
+    throw new AppError(404, "Order not found");
+  }
+
+  const allowedTransitions: Record<OrderStatus, OrderStatus[]> = {
+    PENDING: [OrderStatus.CONFIRMED, OrderStatus.CANCELLED],
+    CONFIRMED: [OrderStatus.PROCESSING, OrderStatus.CANCELLED],
+    PROCESSING: [OrderStatus.SHIPPED, OrderStatus.CANCELLED],
+    SHIPPED: [OrderStatus.OUT_FOR_DELIVERY],
+    OUT_FOR_DELIVERY: [OrderStatus.DELIVERED],
+    DELIVERED: [],
+    CANCELLED: [],
+  };
+
+  if (!allowedTransitions[order.status].includes(status)) {
+    throw new AppError(
+      400,
+      `Cannot change order status from ${order.status} to ${status}`,
+    );
+  }
+
+  const result = await prisma.order.update({
+    where: {
+      id: orderId,
+    },
+    data: {
+      status,
+    },
+    include: {
+      items: true,
+    },
+  });
+
+  return result;
+};
 const cancelOrder = () => {};
 
 const updatePaymentStatus = () => {};
