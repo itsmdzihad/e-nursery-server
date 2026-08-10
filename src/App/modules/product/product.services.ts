@@ -64,6 +64,10 @@ const getProductById = async (id: string) => {
     },
   });
 
+  if (!data) {
+    throw new AppError(404, "product Not Found");
+  }
+
   return data;
 };
 
