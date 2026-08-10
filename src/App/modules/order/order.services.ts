@@ -383,8 +383,48 @@ const cancelOrder = async (
 
   return result;
 };
-const updatePaymentStatus = () => {};
+const updatePaymentStatus = async (
+  orderId: string,
+  paymentStatus: PaymentStatus,
+) => {
+  const order = await prisma.order.findUnique({
+    where: {
+      id: orderId,
+    },
+  });
 
+  if (!order) {
+    throw new AppError(404, "Order not found");
+  }
+
+  const allowedTransitions: Record<PaymentStatus, PaymentStatus[]> = {
+    UNPAID: [PaymentStatus.PAID, PaymentStatus.FAILED],
+    PAID: [PaymentStatus.REFUNDED],
+    FAILED: [PaymentStatus.PAID],
+    REFUNDED: [],
+  };
+
+  if (!allowedTransitions[order.paymentStatus].includes(paymentStatus)) {
+    throw new AppError(
+      400,
+      `Cannot change payment status from ${order.paymentStatus} to ${paymentStatus}`,
+    );
+  }
+
+  const result = await prisma.order.update({
+    where: {
+      id: orderId,
+    },
+    data: {
+      paymentStatus,
+    },
+    include: {
+      items: true,
+    },
+  });
+
+  return result;
+};
 const getOrdersByStatus = () => {};
 
 const getOrderSummary = () => {};
