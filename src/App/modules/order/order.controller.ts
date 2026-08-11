@@ -1,15 +1,17 @@
 import { NextFunction, Request, Response } from "express";
 import catchAsync from "../../utils/catchAsync.js";
 import sendRes from "../../utils/sendRes.js";
+import { orderService } from "./order.services.js";
+import { OrderStatus, PaymentStatus } from "../../../generated/prisma/enums.js";
 
 const createOrder = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const result = {};
+    const result = await orderService.createOrder(req.user?.id, req.body);
 
     sendRes({
       res,
       success: true,
-      message: "Order Fetch Successfully",
+      message: "Order Created Successfully",
       statusCode: 200,
       data: result,
     });
@@ -17,7 +19,12 @@ const createOrder = catchAsync(
 );
 const getAllOrders = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const result = {};
+    const result = await orderService.getAllOrders({
+      limit: "100",
+      page: "1",
+      paymentStatus: PaymentStatus.UNPAID,
+      status: OrderStatus.PENDING,
+    });
 
     sendRes({
       res,
