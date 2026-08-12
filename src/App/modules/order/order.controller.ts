@@ -37,7 +37,11 @@ const getAllOrders = catchAsync(
 );
 const getMyOrders = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const result = {};
+    const result = orderService.getMyOrders(req.user?.Id, {
+      limit: "100",
+      page: "1",
+      status: OrderStatus.PENDING,
+    });
 
     sendRes({
       res,
