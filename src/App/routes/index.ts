@@ -5,6 +5,7 @@ import cartRoute from "../modules/cart/cart.route.js";
 import categoryRoute from "../modules/category/category.route.js";
 import addressRoute from "../modules/address/address.route.js";
 import orderRoute from "../modules/order/order.route.js";
+import paymentRoute from "../modules/payment/payment.route.js";
 
 const router = Router();
 
@@ -32,6 +33,10 @@ const moduleRoutes = [
   {
     path: "/orders",
     route: orderRoute,
+  },
+  {
+    path: "/payments",
+    route: paymentRoute,
   },
 ];
 
