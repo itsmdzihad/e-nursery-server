@@ -125,7 +125,14 @@ const updatePaymentStatus = catchAsync(
 );
 const getOrdersByStatus = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const result = {};
+    const { page, limit } = req.query;
+    const result = await orderService.getOrdersByStatus(
+      req.params.status as OrderStatus,
+      {
+        page: page as string,
+        limit: limit as string,
+      },
+    );
 
     sendRes({
       res,
@@ -138,7 +145,7 @@ const getOrdersByStatus = catchAsync(
 );
 const getOrderSummary = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const result = {};
+    const result = orderService.getOrderSummary();
 
     sendRes({
       res,
