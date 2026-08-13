@@ -1,32 +1,44 @@
-const createPayment = async () => {};
+const createPayment = async (payload: any) => {};
 
-const processPayment = async () => {};
+const processPayment = async (paymentId: string) => {};
 
-const verifyPayment = async () => {};
+const verifyPayment = async (payload: any) => {};
 
-const handlePaymentSuccess = async () => {};
+const handlePaymentSuccess = async (
+  paymentId: string,
+  payload: any,
+) => {};
 
-const handlePaymentFailure = async () => {};
+const handlePaymentFailure = async (
+  paymentId: string,
+  payload: any,
+) => {};
 
-const handlePaymentWebhook = async () => {};
+const handlePaymentWebhook = async (payload: any) => {};
 
-const updatePaymentStatus = async () => {};
+const updatePaymentStatus = async (
+  paymentId: string,
+  status: string,
+) => {};
 
-const getPaymentById = async () => {};
+const getPaymentById = async (paymentId: string) => {};
 
-const getPaymentByOrderId = async () => {};
+const getPaymentByOrderId = async (orderId: string) => {};
 
-const getUserPayments = async () => {};
+const getUserPayments = async (userId: string) => {};
 
-const getAllPayments = async () => {};
+const getAllPayments = async (query: any) => {};
 
-const refundPayment = async () => {};
+const refundPayment = async (
+  paymentId: string,
+  payload: any,
+) => {};
 
-const getRefundByPaymentId = async () => {};
+const getRefundByPaymentId = async (paymentId: string) => {};
 
-const cancelPayment = async () => {};
+const cancelPayment = async (paymentId: string) => {};
 
-const getPaymentHistory = async () => {};
+const getPaymentHistory = async (paymentId: string) => {};
 
 export const paymentService = {
   createPayment,
