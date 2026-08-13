@@ -19,11 +19,13 @@ const createOrder = catchAsync(
 );
 const getAllOrders = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
+    const { page, limit, status, paymentStatus } = req.query;
+
     const result = await orderService.getAllOrders({
-      limit: "100",
-      page: "1",
-      paymentStatus: PaymentStatus.UNPAID,
-      status: OrderStatus.PENDING,
+      limit: limit as string,
+      page: page as string,
+      status: status as OrderStatus,
+      paymentStatus: paymentStatus as PaymentStatus,
     });
 
     sendRes({
@@ -37,10 +39,12 @@ const getAllOrders = catchAsync(
 );
 const getMyOrders = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const result = orderService.getMyOrders(req.user?.Id, {
-      limit: "100",
-      page: "1",
-      status: OrderStatus.PENDING,
+    const { page, limit, status } = req.query;
+
+    const result = await orderService.getMyOrders(req.user?.Id, {
+      limit: limit as string,
+      page: page as string,
+      status: status as OrderStatus,
     });
 
     sendRes({

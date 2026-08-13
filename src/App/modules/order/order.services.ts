@@ -164,6 +164,8 @@ const getAllOrders = async (query: {
     }),
   ]);
 
+  console.log(orders);
+
   if (!orders) {
     throw new AppError(404, "Orders not found");
   }
