@@ -155,6 +155,7 @@ export const OrderScalarFieldEnum = {
   deliveryFee: 'deliveryFee',
   total: 'total',
   status: 'status',
+  cancelReason: 'cancelReason',
   paymentStatus: 'paymentStatus',
   paymentMethod: 'paymentMethod',
   createdAt: 'createdAt',

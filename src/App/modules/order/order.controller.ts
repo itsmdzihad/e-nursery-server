@@ -83,7 +83,7 @@ const updateOrderStatus = catchAsync(
     sendRes({
       res,
       success: true,
-      message: "Order Fetch Successfully",
+      message: "Order Updated Successfully",
       statusCode: 200,
       data: result,
     });
@@ -91,12 +91,17 @@ const updateOrderStatus = catchAsync(
 );
 const cancelOrder = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const result = {};
+    const result = await orderService.cancelOrder(
+      req.params.orderId as string,
+      req.user?.id,
+      req.user?.role,
+      req.body.reason,
+    );
 
     sendRes({
       res,
       success: true,
-      message: "Order Fetch Successfully",
+      message: "Order Cancel Successfully",
       statusCode: 200,
       data: result,
     });
@@ -104,7 +109,10 @@ const cancelOrder = catchAsync(
 );
 const updatePaymentStatus = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const result = {};
+    const result = await orderService.updatePaymentStatus(
+      req.params.orderId as string,
+      req.body.paymentStatus,
+    );
 
     sendRes({
       res,

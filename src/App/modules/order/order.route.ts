@@ -17,7 +17,7 @@ orderRoute.get(
 
 orderRoute.patch(
   "/:orderId/cancel",
-  auth(Role.CUSTOMER),
+  auth(Role.CUSTOMER, Role.ADMIN),
   orderController.cancelOrder,
 );
 
@@ -37,7 +37,7 @@ orderRoute.patch(
 
 orderRoute.patch(
   "/:orderId/payment-status",
-  auth(Role.ADMIN),
+  auth(Role.ADMIN, Role.CUSTOMER),
   orderController.updatePaymentStatus,
 );
 

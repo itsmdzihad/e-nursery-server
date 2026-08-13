@@ -331,6 +331,7 @@ const updateOrderStatus = async (orderId: string, status: OrderStatus) => {
 const cancelOrder = async (
   orderId: string,
   userId: string,
+  role: Role,
   reason?: string,
 ) => {
   const result = await prisma.$transaction(async (tx) => {
@@ -347,7 +348,7 @@ const cancelOrder = async (
       throw new AppError(404, "Order not found");
     }
 
-    if (order.userId !== userId) {
+    if (role === Role.CUSTOMER && order.userId !== userId) {
       throw new AppError(403, "You are not allowed to cancel this order");
     }
 
@@ -359,10 +360,6 @@ const cancelOrder = async (
         400,
         `Order cannot be cancelled when status is ${order.status}`,
       );
-    }
-
-    if (order.paymentStatus === PaymentStatus.PAID) {
-      throw new AppError(400, "Paid order cannot be cancelled");
     }
 
     for (const item of order.items) {
@@ -384,6 +381,7 @@ const cancelOrder = async (
       },
       data: {
         status: OrderStatus.CANCELLED,
+        cancelReason: reason as string,
       },
       include: {
         items: true,
@@ -407,6 +405,17 @@ const updatePaymentStatus = async (
 
   if (!order) {
     throw new AppError(404, "Order not found");
+  }
+
+  if (
+    paymentStatus === PaymentStatus.PAID &&
+    order.paymentMethod === PaymentMethod.COD &&
+    order.status !== OrderStatus.DELIVERED
+  ) {
+    throw new AppError(
+      400,
+      "COD payment can only be marked as paid after delivery",
+    );
   }
 
   const allowedTransitions: Record<PaymentStatus, PaymentStatus[]> = {

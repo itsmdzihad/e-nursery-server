@@ -23,7 +23,9 @@ model Order {
     deliveryFee Decimal @db.Decimal(10, 2)
     total       Decimal @db.Decimal(10, 2)
 
-    status        OrderStatus   @default(PENDING)
+    status       OrderStatus @default(PENDING)
+    cancelReason String?
+
     paymentStatus PaymentStatus @default(UNPAID)
     paymentMethod PaymentMethod @default(COD)
 
