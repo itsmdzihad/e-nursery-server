@@ -58,7 +58,11 @@ const getMyOrders = catchAsync(
 );
 const getSingleOrder = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const result = {};
+    const result = await orderService.getSingleOrder(
+      req.params.orderId as string,
+      req.user?.id,
+      req.user?.role,
+    );
 
     sendRes({
       res,
