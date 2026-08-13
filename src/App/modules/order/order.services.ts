@@ -3,6 +3,7 @@ import { prisma } from "../../config/db.js";
 import AppError from "../../errors/AppError.js";
 import {
   OrderStatus,
+  PaymentMethod,
   PaymentStatus,
   Role,
 } from "../../../generated/prisma/enums.js";
@@ -164,8 +165,6 @@ const getAllOrders = async (query: {
     }),
   ]);
 
-  console.log(orders);
-
   if (!orders) {
     throw new AppError(404, "Orders not found");
   }
@@ -285,6 +284,17 @@ const updateOrderStatus = async (orderId: string, status: OrderStatus) => {
 
   if (!order) {
     throw new AppError(404, "Order not found");
+  }
+
+  if (
+    order.paymentMethod === PaymentMethod.ONLINE &&
+    order.paymentStatus !== PaymentStatus.PAID &&
+    status !== OrderStatus.CANCELLED
+  ) {
+    throw new AppError(
+      400,
+      "Online payment must be completed before confirming the order",
+    );
   }
 
   const allowedTransitions: Record<OrderStatus, OrderStatus[]> = {

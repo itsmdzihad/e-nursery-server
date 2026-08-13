@@ -75,7 +75,10 @@ const getSingleOrder = catchAsync(
 );
 const updateOrderStatus = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const result = {};
+    const result = await orderService.updateOrderStatus(
+      req.params.orderId as string,
+      req.body.status as OrderStatus,
+    );
 
     sendRes({
       res,
