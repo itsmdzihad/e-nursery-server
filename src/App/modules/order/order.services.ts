@@ -299,12 +299,22 @@ const updateOrderStatus = async (orderId: string, status: OrderStatus) => {
 
   const allowedTransitions: Record<OrderStatus, OrderStatus[]> = {
     PENDING: [OrderStatus.CONFIRMED, OrderStatus.CANCELLED],
+
     CONFIRMED: [OrderStatus.PROCESSING, OrderStatus.CANCELLED],
+
     PROCESSING: [OrderStatus.SHIPPED, OrderStatus.CANCELLED],
+
     SHIPPED: [OrderStatus.OUT_FOR_DELIVERY],
+
     OUT_FOR_DELIVERY: [OrderStatus.DELIVERED],
-    DELIVERED: [],
-    CANCELLED: [],
+
+    DELIVERED: [OrderStatus.REFUNDED, OrderStatus.PARTIALLY_REFUNDED],
+
+    CANCELLED: [OrderStatus.REFUNDED, OrderStatus.PARTIALLY_REFUNDED],
+
+    REFUNDED: [],
+
+    PARTIALLY_REFUNDED: [OrderStatus.REFUNDED],
   };
 
   if (!allowedTransitions[order.status].includes(status)) {

@@ -1,0 +1,32 @@
+model Payment {
+    id      String @id @default(uuid())
+    orderId String @unique
+    userId  String
+
+    amount   Decimal @db.Decimal(10, 2)
+    currency String  @default("BDT")
+
+    method PaymentMethod
+    status PaymentStatus @default(UNPAID)
+
+    transactionId String? @unique
+    gateway       String?
+    gatewayData   Json?
+
+    paidAt      DateTime?
+    failedAt    DateTime?
+    cancelledAt DateTime?
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    order Order @relation(fields: [orderId], references: [id])
+    user  User  @relation(fields: [userId], references: [id])
+
+    refunds Refund[]
+
+    @@index([userId])
+    @@index([status])
+    @@index([method])
+    @@index([createdAt])
+}

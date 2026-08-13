@@ -11,4 +11,5 @@ model User {
     cart       Cart?
     addresses  Address[]
     orders     Order[]
+    payments   Payment[]
 }

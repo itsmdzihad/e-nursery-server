@@ -72,6 +72,11 @@ export type Order = Prisma.OrderModel
  */
 export type OrderItem = Prisma.OrderItemModel
 /**
+ * Model Payment
+ * 
+ */
+export type Payment = Prisma.PaymentModel
+/**
  * Model Product
  * 
  */
@@ -81,6 +86,11 @@ export type Product = Prisma.ProductModel
  * 
  */
 export type Size = Prisma.SizeModel
+/**
+ * Model Refund
+ * 
+ */
+export type Refund = Prisma.RefundModel
 /**
  * Model User
  * 

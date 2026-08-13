@@ -33,6 +33,7 @@ model Order {
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+    payment   Payment?
 
     @@index([userId])
     @@index([status])
@@ -48,6 +49,8 @@ enum OrderStatus {
     OUT_FOR_DELIVERY
     DELIVERED
     CANCELLED
+    REFUNDED
+    PARTIALLY_REFUNDED
 }
 
 enum PaymentStatus {
@@ -60,4 +63,8 @@ enum PaymentStatus {
 enum PaymentMethod {
     COD
     ONLINE
+    BKASH
+    NAGAD
+    SSLCOMMERZ
+    STRIPE
 }
