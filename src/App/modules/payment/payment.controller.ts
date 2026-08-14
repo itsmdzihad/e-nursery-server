@@ -7,6 +7,8 @@ const createPayment = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const result = await paymentService.createPayment(req.body as string);
 
+    console.log(result);
+
     sendRes({
       res,
       statusCode: 201,
