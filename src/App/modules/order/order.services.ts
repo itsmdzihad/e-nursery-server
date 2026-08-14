@@ -308,13 +308,9 @@ const updateOrderStatus = async (orderId: string, status: OrderStatus) => {
 
     OUT_FOR_DELIVERY: [OrderStatus.DELIVERED],
 
-    DELIVERED: [OrderStatus.REFUNDED, OrderStatus.PARTIALLY_REFUNDED],
+    DELIVERED: [],
 
-    CANCELLED: [OrderStatus.REFUNDED, OrderStatus.PARTIALLY_REFUNDED],
-
-    REFUNDED: [],
-
-    PARTIALLY_REFUNDED: [OrderStatus.REFUNDED],
+    CANCELLED: [],
   };
 
   if (!allowedTransitions[order.status].includes(status)) {
@@ -429,9 +425,22 @@ const updatePaymentStatus = async (
   }
 
   const allowedTransitions: Record<PaymentStatus, PaymentStatus[]> = {
-    UNPAID: [PaymentStatus.PAID, PaymentStatus.FAILED],
-    PAID: [PaymentStatus.REFUNDED],
-    FAILED: [PaymentStatus.PAID],
+    UNPAID: [PaymentStatus.PENDING, PaymentStatus.CANCELLED],
+
+    PENDING: [
+      PaymentStatus.PAID,
+      PaymentStatus.FAILED,
+      PaymentStatus.CANCELLED,
+    ],
+
+    PAID: [PaymentStatus.PARTIALLY_REFUNDED, PaymentStatus.REFUNDED],
+
+    FAILED: [PaymentStatus.PENDING, PaymentStatus.CANCELLED],
+
+    PARTIALLY_REFUNDED: [PaymentStatus.REFUNDED],
+
+    CANCELLED: [],
+
     REFUNDED: [],
   };
 

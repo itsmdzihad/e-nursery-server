@@ -49,15 +49,16 @@ enum OrderStatus {
     OUT_FOR_DELIVERY
     DELIVERED
     CANCELLED
-    REFUNDED
-    PARTIALLY_REFUNDED
 }
 
 enum PaymentStatus {
     UNPAID
+    PENDING
     PAID
     FAILED
+    CANCELLED
     REFUNDED
+    PARTIALLY_REFUNDED
 }
 
 enum PaymentMethod {

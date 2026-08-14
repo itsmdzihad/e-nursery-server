@@ -25,9 +25,7 @@ export const OrderStatus = {
   SHIPPED: 'SHIPPED',
   OUT_FOR_DELIVERY: 'OUT_FOR_DELIVERY',
   DELIVERED: 'DELIVERED',
-  CANCELLED: 'CANCELLED',
-  REFUNDED: 'REFUNDED',
-  PARTIALLY_REFUNDED: 'PARTIALLY_REFUNDED'
+  CANCELLED: 'CANCELLED'
 } as const
 
 export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus]
@@ -35,9 +33,12 @@ export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus]
 
 export const PaymentStatus = {
   UNPAID: 'UNPAID',
+  PENDING: 'PENDING',
   PAID: 'PAID',
   FAILED: 'FAILED',
-  REFUNDED: 'REFUNDED'
+  CANCELLED: 'CANCELLED',
+  REFUNDED: 'REFUNDED',
+  PARTIALLY_REFUNDED: 'PARTIALLY_REFUNDED'
 } as const
 
 export type PaymentStatus = (typeof PaymentStatus)[keyof typeof PaymentStatus]
