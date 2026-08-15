@@ -23,7 +23,8 @@ model Payment {
     order Order @relation(fields: [orderId], references: [id])
     user  User  @relation(fields: [userId], references: [id])
 
-    refunds Refund[]
+    refunds         Refund[]
+    paymentAttempts PaymentAttempt[]
 
     @@index([userId])
     @@index([status])

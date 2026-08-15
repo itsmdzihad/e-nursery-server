@@ -81,19 +81,12 @@ const handlePaymentSuccess = catchAsync(
 
 const handlePaymentFailure = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { paymentId } = req.params;
-
-    const result = await paymentService.handlePaymentFailure(
-      paymentId as string,
-      req.body,
-    );
-
     sendRes({
       res,
       statusCode: 200,
       success: true,
       message: "Payment failure handled successfully",
-      data: result,
+      data: {},
     });
   },
 );

@@ -1,0 +1,20 @@
+model PaymentAttempt {
+    id String @id @default(uuid())
+
+    paymentId String
+    payment   Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+
+    gatewayTransactionId String  @unique
+    transactionId        String? @unique
+
+    status PaymentStatus @default(PENDING)
+
+    gatewayData Json?
+
+    attemptedAt DateTime  @default(now())
+    completedAt DateTime?
+
+    @@index([paymentId])
+    @@index([status])
+    @@index([attemptedAt])
+}
