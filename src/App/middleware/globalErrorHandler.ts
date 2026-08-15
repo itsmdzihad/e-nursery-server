@@ -9,7 +9,7 @@ const globalErrorHandler = (
   res: Response,
   next: NextFunction,
 ) => {
-  console.log(err.name);
+  console.log(err);
   let statusCode = err.statusCode
     ? err.statusCode
     : httpStatus.INTERNAL_SERVER_ERROR;

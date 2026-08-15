@@ -5,7 +5,10 @@ import sendRes from "../../utils/sendRes.js";
 
 const createPayment = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const result = await paymentService.createPayment(req.body as string);
+    const result = await paymentService.createPayment({
+      orderId: req.params.orderId,
+      userId: req.user?.id,
+    });
 
     sendRes({
       res,
@@ -21,13 +24,30 @@ const processPayment = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { paymentId } = req.params;
 
-    const result = await paymentService.processPayment(paymentId as string);
+    const result = await paymentService.processPayment(
+      paymentId as string,
+      req.user?.id,
+    );
 
     sendRes({
       res,
       statusCode: 200,
       success: true,
       message: "Payment processing initiated successfully",
+      data: result,
+    });
+  },
+);
+
+const ipnPayment = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const result = await paymentService.ipnPayment(req.body);
+
+    sendRes({
+      res,
+      statusCode: 200,
+      success: true,
+      message: "Payment verified successfully",
       data: result,
     });
   },
@@ -49,19 +69,12 @@ const verifyPayment = catchAsync(
 
 const handlePaymentSuccess = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { paymentId } = req.params;
-
-    const result = await paymentService.handlePaymentSuccess(
-      paymentId as string,
-      req.body,
-    );
-
     sendRes({
       res,
       statusCode: 200,
       success: true,
       message: "Payment success handled successfully",
-      data: result,
+      data: {},
     });
   },
 );
@@ -268,4 +281,5 @@ export const paymentController = {
   getRefundByPaymentId,
   cancelPayment,
   getPaymentHistory,
+  ipnPayment,
 };

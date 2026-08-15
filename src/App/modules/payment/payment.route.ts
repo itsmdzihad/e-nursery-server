@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, urlencoded } from "express";
 import auth from "../../middleware/auth.js";
 import { Role } from "../../../type/index.js";
 import { paymentController } from "./payment.controller.js";
@@ -6,7 +6,11 @@ import { paymentController } from "./payment.controller.js";
 const paymentRoute = Router();
 
 // Customer
-paymentRoute.post("/", auth(Role.CUSTOMER), paymentController.createPayment);
+paymentRoute.post(
+  "/order/:orderId",
+  auth(Role.CUSTOMER),
+  paymentController.createPayment,
+);
 
 paymentRoute.post(
   "/:paymentId/process",
@@ -44,23 +48,31 @@ paymentRoute.get(
   paymentController.getPaymentHistory,
 );
 
-paymentRoute.patch(
-  "/:paymentId/cancel",
-  auth(Role.CUSTOMER),
-  paymentController.cancelPayment,
-);
-
 // Payment Gateway
 paymentRoute.post("/webhook", paymentController.handlePaymentWebhook);
 
 paymentRoute.post(
-  "/:paymentId/success",
+  "/success",
+  urlencoded({ extended: true }),
   paymentController.handlePaymentSuccess,
 );
 
 paymentRoute.post(
-  "/:paymentId/failure",
+  "/failure",
+  urlencoded({ extended: true }),
   paymentController.handlePaymentFailure,
+);
+
+paymentRoute.post(
+  "/cancel",
+  urlencoded({ extended: true }),
+  paymentController.cancelPayment,
+);
+
+paymentRoute.post(
+  "/ipn",
+  urlencoded({ extended: true }),
+  paymentController.ipnPayment,
 );
 
 // Admin
