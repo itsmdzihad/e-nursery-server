@@ -58,6 +58,7 @@ export const ModelName = {
   Order: 'Order',
   OrderItem: 'OrderItem',
   Payment: 'Payment',
+  PaymentAttempt: 'PaymentAttempt',
   Product: 'Product',
   Size: 'Size',
   Refund: 'Refund',
@@ -202,6 +203,20 @@ export const PaymentScalarFieldEnum = {
 } as const
 
 export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
+
+
+export const PaymentAttemptScalarFieldEnum = {
+  id: 'id',
+  paymentId: 'paymentId',
+  gatewayTransactionId: 'gatewayTransactionId',
+  transactionId: 'transactionId',
+  status: 'status',
+  gatewayData: 'gatewayData',
+  attemptedAt: 'attemptedAt',
+  completedAt: 'completedAt'
+} as const
+
+export type PaymentAttemptScalarFieldEnum = (typeof PaymentAttemptScalarFieldEnum)[keyof typeof PaymentAttemptScalarFieldEnum]
 
 
 export const ProductScalarFieldEnum = {

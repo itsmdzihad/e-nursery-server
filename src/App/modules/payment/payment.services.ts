@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import SSLCommerzPayment from "sslcommerz-lts";
 import config from "../../config/index.js";
 import AppError from "../../errors/AppError.js";
@@ -142,16 +143,31 @@ const processPayment = async (paymentId: string, userId: string) => {
     ...new Set(payment.order.items.map((item) => item.product.category.name)),
   ].join(", ");
 
+  /*
+   * Create a new attempt for every payment attempt.
+   */
+  const gatewayTransactionId = crypto.randomUUID();
+
+  const attempt = await prisma.paymentAttempt.create({
+    data: {
+      paymentId: payment.id,
+      gatewayTransactionId,
+      status: PaymentStatus.PENDING,
+    },
+  });
+
   const data = {
     total_amount: Number(payment.amount),
     currency: payment.currency,
 
-    tran_id: payment.id,
+    // IMPORTANT:
+    // Use the attempt ID, NOT payment.id
+    tran_id: attempt.gatewayTransactionId,
 
-    success_url: config.base_url + `/payments/success`,
-    fail_url: config.base_url + `/payments/failure`,
-    cancel_url: config.base_url + `/payments/cancel`,
-    ipn_url: config.base_url + `/payments/ipn`,
+    success_url: `${config.base_url}/payments/success`,
+    fail_url: `${config.base_url}/payments/failure`,
+    cancel_url: `${config.base_url}/payments/cancel`,
+    ipn_url: `${config.base_url}/payments/ipn`,
 
     shipping_method: "Courier",
 
@@ -186,13 +202,66 @@ const processPayment = async (paymentId: string, userId: string) => {
     setting.is_live,
   );
 
-  const apiResponse = await sslcz.init(data);
+  let apiResponse;
+
+  try {
+    apiResponse = await sslcz.init(data);
+  } catch (error) {
+    /*
+     * Gateway initialization itself failed.
+     * Mark this attempt as failed.
+     */
+    await prisma.paymentAttempt.update({
+      where: {
+        id: attempt.id,
+      },
+      data: {
+        status: PaymentStatus.FAILED,
+        completedAt: new Date(),
+        gatewayData: {
+          error:
+            error instanceof Error
+              ? error.message
+              : "SSLCommerz initialization failed",
+        },
+      },
+    });
+
+    throw new AppError(502, "Failed to initialize SSLCommerz payment");
+  }
 
   if (!apiResponse?.GatewayPageURL) {
+    await prisma.paymentAttempt.update({
+      where: {
+        id: attempt.id,
+      },
+      data: {
+        status: PaymentStatus.FAILED,
+        completedAt: new Date(),
+        gatewayData: apiResponse as Prisma.InputJsonValue,
+      },
+    });
+
     throw new AppError(500, "Failed to initialize SSLCommerz payment");
   }
 
+  /*
+   * Store gateway initialization data.
+   *
+   * Payment = current overall payment state
+   * PaymentAttempt = this specific attempt
+   */
   await prisma.$transaction([
+    prisma.paymentAttempt.update({
+      where: {
+        id: attempt.id,
+      },
+      data: {
+        status: PaymentStatus.PENDING,
+        gatewayData: apiResponse as Prisma.InputJsonValue,
+      },
+    }),
+
     prisma.payment.update({
       where: {
         id: payment.id,
@@ -216,38 +285,46 @@ const processPayment = async (paymentId: string, userId: string) => {
 
   return {
     url: apiResponse.GatewayPageURL,
+    paymentId: payment.id,
+    attemptId: attempt.id,
+    transactionId: attempt.gatewayTransactionId,
   };
 };
 
 const ipnPayment = async (payload: any) => {
-  const { tran_id, val_id } = payload;
+  const { tran_id, val_id, status } = payload;
+
+  console.log("SSLCommerz IPN:", payload);
 
   if (!tran_id) {
     throw new AppError(400, "Transaction ID is required");
   }
 
-  if (!val_id) {
-    throw new AppError(400, "Validation ID is required");
-  }
-
-  const payment = await prisma.payment.findUnique({
+  const attempt = await prisma.paymentAttempt.findUnique({
     where: {
-      id: tran_id,
+      gatewayTransactionId: tran_id,
     },
     include: {
-      order: true,
+      payment: {
+        include: {
+          order: true,
+        },
+      },
     },
   });
 
-  if (!payment) {
-    throw new AppError(404, "Payment not found");
+  if (!attempt) {
+    throw new AppError(404, "Payment attempt not found");
   }
+
+  const payment = attempt.payment;
 
   if (payment.status === PaymentStatus.PAID) {
     return {
       success: true,
       message: "Payment already processed",
       payment,
+      attempt,
     };
   }
 
@@ -263,6 +340,55 @@ const ipnPayment = async (payload: any) => {
     throw new AppError(400, "Order has been cancelled");
   }
 
+  if (status !== "VALID") {
+    const result = await prisma.$transaction([
+      prisma.paymentAttempt.update({
+        where: {
+          id: attempt.id,
+        },
+        data: {
+          status: PaymentStatus.FAILED,
+          completedAt: new Date(),
+          gatewayData: payload as Prisma.InputJsonValue,
+        },
+      }),
+
+      prisma.payment.update({
+        where: {
+          id: payment.id,
+        },
+        data: {
+          status: PaymentStatus.FAILED,
+          failedAt: new Date(),
+          gateway: "SSLCOMMERZ",
+          gatewayData: payload as Prisma.InputJsonValue,
+        },
+      }),
+
+      prisma.order.update({
+        where: {
+          id: payment.orderId,
+        },
+        data: {
+          paymentStatus: PaymentStatus.FAILED,
+        },
+      }),
+    ]);
+
+    return {
+      success: true,
+      message: "Payment attempt failed",
+      payment: result[1],
+      attempt: result[0],
+      order: result[2],
+    };
+  }
+
+
+  if (!val_id) {
+    throw new AppError(400, "Validation ID is required");
+  }
+
   const validationUrl = new URL(
     "https://sandbox.sslcommerz.com/validator/api/validationserverAPI.php",
   );
@@ -273,12 +399,18 @@ const ipnPayment = async (payload: any) => {
   validationUrl.searchParams.set("v", "1");
   validationUrl.searchParams.set("format", "json");
 
-  let validationResponse;
+  let validationResponse: any;
 
   try {
     const response = await fetch(validationUrl);
 
+    console.log(response);
+
     const responseText = await response.text();
+
+    console.log("SSLCommerz HTTP STATUS:", response.status);
+
+    console.log("SSLCommerz RESPONSE:", responseText);
 
     if (!response.ok) {
       throw new AppError(
@@ -297,8 +429,6 @@ const ipnPayment = async (payload: any) => {
     try {
       validationResponse = JSON.parse(responseText);
     } catch {
-      console.error("Invalid SSLCommerz response:", responseText);
-
       throw new AppError(502, "SSLCommerz returned an invalid JSON response");
     }
   } catch (error) {
@@ -322,19 +452,39 @@ const ipnPayment = async (payload: any) => {
     );
   }
 
-  if (validationResponse.tran_id !== payment.id) {
-    throw new AppError(400, "Transaction ID does not match payment");
+
+  if (validationResponse.tran_id !== attempt.gatewayTransactionId) {
+    throw new AppError(400, "Transaction ID does not match payment attempt");
   }
+
 
   if (Number(validationResponse.amount) !== Number(payment.amount)) {
     throw new AppError(400, "Payment amount does not match");
   }
 
+
   if (validationResponse.currency !== payment.currency) {
     throw new AppError(400, "Payment currency does not match");
   }
 
+  if (!validationResponse.bank_tran_id) {
+    throw new AppError(400, "Bank transaction ID is missing");
+  }
+
+
   const result = await prisma.$transaction([
+    prisma.paymentAttempt.update({
+      where: {
+        id: attempt.id,
+      },
+      data: {
+        status: PaymentStatus.PAID,
+        transactionId: validationResponse.bank_tran_id,
+        completedAt: new Date(),
+        gatewayData: validationResponse as Prisma.InputJsonValue,
+      },
+    }),
+
     prisma.payment.update({
       where: {
         id: payment.id,
@@ -362,8 +512,9 @@ const ipnPayment = async (payload: any) => {
   return {
     success: true,
     message: "Payment processed successfully",
-    payment: result[0],
-    order: result[1],
+    payment: result[1],
+    attempt: result[0],
+    order: result[2],
   };
 };
 
