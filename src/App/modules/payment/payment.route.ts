@@ -18,11 +18,11 @@ paymentRoute.post(
   paymentController.processPayment,
 );
 
-paymentRoute.post(
-  "/verify",
-  auth(Role.CUSTOMER),
-  paymentController.verifyPayment,
-);
+// paymentRoute.post(
+//   "/verify",
+//   auth(Role.CUSTOMER),
+//   paymentController.verifyPayment,
+// );
 
 paymentRoute.get(
   "/my-payments",
@@ -42,14 +42,14 @@ paymentRoute.get(
   paymentController.getPaymentByOrderId,
 );
 
-paymentRoute.get(
-  "/:paymentId/history",
-  auth(Role.CUSTOMER, Role.ADMIN),
-  paymentController.getPaymentHistory,
-);
+// paymentRoute.get(
+//   "/:paymentId/history",
+//   auth(Role.CUSTOMER, Role.ADMIN),
+//   paymentController.getPaymentHistory,
+// );
 
 // Payment Gateway
-paymentRoute.post("/webhook", paymentController.handlePaymentWebhook);
+// paymentRoute.post("/webhook", paymentController.handlePaymentWebhook);
 
 paymentRoute.post(
   "/success",
@@ -63,11 +63,11 @@ paymentRoute.post(
   paymentController.handlePaymentFailure,
 );
 
-paymentRoute.post(
-  "/cancel",
-  urlencoded({ extended: true }),
-  paymentController.cancelPayment,
-);
+// paymentRoute.post(
+//   "/cancel",
+//   urlencoded({ extended: true }),
+//   paymentController.cancelPayment,
+// );
 
 paymentRoute.post(
   "/ipn",
@@ -78,22 +78,22 @@ paymentRoute.post(
 // Admin
 paymentRoute.get("/", auth(Role.ADMIN), paymentController.getAllPayments);
 
-paymentRoute.patch(
-  "/:paymentId/status",
-  auth(Role.ADMIN),
-  paymentController.updatePaymentStatus,
-);
+// paymentRoute.patch(
+//   "/:paymentId/status",
+//   auth(Role.ADMIN),
+//   paymentController.updatePaymentStatus,
+// );
 
-paymentRoute.post(
-  "/:paymentId/refund",
-  auth(Role.ADMIN),
-  paymentController.refundPayment,
-);
+// paymentRoute.post(
+//   "/:paymentId/refund",
+//   auth(Role.ADMIN),
+//   paymentController.refundPayment,
+// );
 
-paymentRoute.get(
-  "/:paymentId/refund",
-  auth(Role.ADMIN),
-  paymentController.getRefundByPaymentId,
-);
+// paymentRoute.get(
+//   "/:paymentId/refund",
+//   auth(Role.ADMIN),
+//   paymentController.getRefundByPaymentId,
+// );
 
 export default paymentRoute;

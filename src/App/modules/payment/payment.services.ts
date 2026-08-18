@@ -384,7 +384,6 @@ const ipnPayment = async (payload: any) => {
     };
   }
 
-
   if (!val_id) {
     throw new AppError(400, "Validation ID is required");
   }
@@ -452,16 +451,13 @@ const ipnPayment = async (payload: any) => {
     );
   }
 
-
   if (validationResponse.tran_id !== attempt.gatewayTransactionId) {
     throw new AppError(400, "Transaction ID does not match payment attempt");
   }
 
-
   if (Number(validationResponse.amount) !== Number(payment.amount)) {
     throw new AppError(400, "Payment amount does not match");
   }
-
 
   if (validationResponse.currency !== payment.currency) {
     throw new AppError(400, "Payment currency does not match");
@@ -470,7 +466,6 @@ const ipnPayment = async (payload: any) => {
   if (!validationResponse.bank_tran_id) {
     throw new AppError(400, "Bank transaction ID is missing");
   }
-
 
   const result = await prisma.$transaction([
     prisma.paymentAttempt.update({
@@ -518,44 +513,359 @@ const ipnPayment = async (payload: any) => {
   };
 };
 
-const verifyPayment = async (payload: any) => {};
+const getPaymentById = async (paymentId: string) => {
+  if (!paymentId) {
+    throw new AppError(400, "Payment ID is required");
+  }
 
-const handlePaymentFailure = async (paymentId: string, payload: any) => {};
+  const payment = await prisma.payment.findUnique({
+    where: {
+      id: paymentId,
+    },
+    include: {
+      order: {
+        include: {
+          items: {
+            include: {
+              product: {
+                select: {
+                  id: true,
+                  name: true,
+                  price: true,
+                  images: true,
+                },
+              },
+              size: true,
+            },
+          },
+        },
+      },
 
-const handlePaymentWebhook = async (payload: any) => {};
+      paymentAttempts: {
+        orderBy: {
+          attemptedAt: "desc",
+        },
+      },
 
-const updatePaymentStatus = async (paymentId: string, status: string) => {};
+      refunds: {
+        orderBy: {
+          createdAt: "desc",
+        },
+      },
+    },
+  });
 
-const getPaymentById = async (paymentId: string) => {};
+  if (!payment) {
+    throw new AppError(404, "Payment not found");
+  }
 
-const getPaymentByOrderId = async (orderId: string) => {};
+  return payment;
+};
 
-const getUserPayments = async (userId: string) => {};
+const getPaymentByOrderId = async (orderId: string) => {
+  if (!orderId) {
+    throw new AppError(400, "Order ID is required");
+  }
 
-const getAllPayments = async (query: any) => {};
+  const payment = await prisma.payment.findUnique({
+    where: {
+      orderId,
+    },
+    include: {
+      order: {
+        include: {
+          items: {
+            include: {
+              product: {
+                select: {
+                  id: true,
+                  name: true,
+                  price: true,
+                  images: true,
+                },
+              },
+              size: true,
+            },
+          },
+        },
+      },
 
-const refundPayment = async (paymentId: string, payload: any) => {};
+      paymentAttempts: {
+        orderBy: {
+          attemptedAt: "desc",
+        },
+      },
 
-const getRefundByPaymentId = async (paymentId: string) => {};
+      refunds: {
+        orderBy: {
+          createdAt: "desc",
+        },
+      },
+    },
+  });
 
-const cancelPayment = async (paymentId: string) => {};
+  if (!payment) {
+    throw new AppError(404, "Payment not found for this order");
+  }
 
-const getPaymentHistory = async (paymentId: string) => {};
+  return payment;
+};
+
+const getUserPayments = async (userId: string) => {
+  if (!userId) {
+    throw new AppError(400, "User ID is required");
+  }
+
+  const payments = await prisma.payment.findMany({
+    where: {
+      userId,
+    },
+
+    include: {
+      order: {
+        select: {
+          id: true,
+          fullName: true,
+          total: true,
+          status: true,
+          paymentStatus: true,
+          paymentMethod: true,
+          createdAt: true,
+
+          items: {
+            select: {
+              id: true,
+              quantity: true,
+
+              product: {
+                select: {
+                  id: true,
+                  name: true,
+                  images: true,
+                },
+              },
+
+              size: true,
+            },
+          },
+        },
+      },
+
+      paymentAttempts: {
+        orderBy: {
+          attemptedAt: "desc",
+        },
+        select: {
+          id: true,
+          gatewayTransactionId: true,
+          transactionId: true,
+          status: true,
+          attemptedAt: true,
+          completedAt: true,
+          gatewayData: true,
+        },
+      },
+
+      refunds: {
+        orderBy: {
+          createdAt: "desc",
+        },
+        select: {
+          id: true,
+          amount: true,
+          reason: true,
+          status: true,
+          refundId: true,
+          processedAt: true,
+          createdAt: true,
+        },
+      },
+    },
+
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  return payments;
+};
+
+const getAllPayments = async (query: any) => {
+  const {
+    page = "1",
+    limit = "10",
+    status,
+    method,
+    gateway,
+    userId,
+    orderId,
+    search,
+    sortBy = "createdAt",
+    sortOrder = "desc",
+  } = query;
+
+  const pageNumber = Math.max(Number(page) || 1, 1);
+  const limitNumber = Math.min(Math.max(Number(limit) || 10, 1), 100);
+
+  const skip = (pageNumber - 1) * limitNumber;
+
+  const where: Prisma.PaymentWhereInput = {};
+
+  if (status) {
+    where.status = status;
+  }
+
+  if (method) {
+    where.method = method;
+  }
+
+  if (gateway) {
+    where.gateway = gateway;
+  }
+
+  if (userId) {
+    where.userId = userId;
+  }
+
+  if (orderId) {
+    where.orderId = orderId;
+  }
+
+  if (search) {
+    where.OR = [
+      {
+        id: {
+          contains: search,
+          mode: "insensitive",
+        },
+      },
+      {
+        transactionId: {
+          contains: search,
+          mode: "insensitive",
+        },
+      },
+      {
+        gateway: {
+          contains: search,
+          mode: "insensitive",
+        },
+      },
+    ];
+  }
+
+  const allowedSortFields = [
+    "createdAt",
+    "updatedAt",
+    "amount",
+    "status",
+    "method",
+  ];
+
+  const finalSortBy = allowedSortFields.includes(sortBy) ? sortBy : "createdAt";
+
+  const finalSortOrder = sortOrder === "asc" ? "asc" : "desc";
+
+  const [payments, total] = await prisma.$transaction([
+    prisma.payment.findMany({
+      where,
+
+      skip,
+      take: limitNumber,
+
+      include: {
+        order: {
+          select: {
+            id: true,
+            fullName: true,
+            phone: true,
+            total: true,
+            status: true,
+            paymentStatus: true,
+            paymentMethod: true,
+            createdAt: true,
+          },
+        },
+
+        paymentAttempts: {
+          orderBy: {
+            attemptedAt: "desc",
+          },
+          select: {
+            id: true,
+            gatewayTransactionId: true,
+            transactionId: true,
+            status: true,
+            attemptedAt: true,
+            completedAt: true,
+          },
+        },
+
+        refunds: {
+          orderBy: {
+            createdAt: "desc",
+          },
+          select: {
+            id: true,
+            amount: true,
+            reason: true,
+            status: true,
+            refundId: true,
+            processedAt: true,
+            createdAt: true,
+          },
+        },
+      },
+
+      orderBy: {
+        [finalSortBy]: finalSortOrder,
+      },
+    }),
+
+    prisma.payment.count({
+      where,
+    }),
+  ]);
+
+  return {
+    meta: {
+      page: pageNumber,
+      limit: limitNumber,
+      total,
+      totalPages: Math.ceil(total / limitNumber),
+    },
+
+    data: payments,
+  };
+};
+
+// const verifyPayment = async (payload: any) => {};
+
+// const handlePaymentWebhook = async (payload: any) => {};
+
+// const updatePaymentStatus = async (paymentId: string, status: string) => {};
+
+// const refundPayment = async (paymentId: string, payload: any) => {};
+
+// const getRefundByPaymentId = async (paymentId: string) => {};
+
+// const cancelPayment = async (paymentId: string) => {};
+
+// const getPaymentHistory = async (paymentId: string) => {};
 
 export const paymentService = {
   createPayment,
   processPayment,
-  verifyPayment,
-  handlePaymentFailure,
-  handlePaymentWebhook,
-  updatePaymentStatus,
+  // verifyPayment,
+  // handlePaymentWebhook,
+  // updatePaymentStatus,
   getPaymentById,
   getPaymentByOrderId,
   getUserPayments,
   getAllPayments,
-  refundPayment,
-  getRefundByPaymentId,
-  cancelPayment,
-  getPaymentHistory,
+  // refundPayment,
+  // getRefundByPaymentId,
+  // cancelPayment,
+  // getPaymentHistory,
   ipnPayment,
 };

@@ -53,20 +53,6 @@ const ipnPayment = catchAsync(
   },
 );
 
-const verifyPayment = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const result = await paymentService.verifyPayment(req.body as string);
-
-    sendRes({
-      res,
-      statusCode: 200,
-      success: true,
-      message: "Payment verified successfully",
-      data: result,
-    });
-  },
-);
-
 const handlePaymentSuccess = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     sendRes({
@@ -91,41 +77,55 @@ const handlePaymentFailure = catchAsync(
   },
 );
 
-const handlePaymentWebhook = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const result = await paymentService.handlePaymentWebhook(
-      req.body as string,
-    );
+// const verifyPayment = catchAsync(
+//   async (req: Request, res: Response, next: NextFunction) => {
+//     const result = await paymentService.verifyPayment(req.body as string);
 
-    sendRes({
-      res,
-      statusCode: 200,
-      success: true,
-      message: "Payment webhook handled successfully",
-      data: result,
-    });
-  },
-);
+//     sendRes({
+//       res,
+//       statusCode: 200,
+//       success: true,
+//       message: "Payment verified successfully",
+//       data: result,
+//     });
+//   },
+// );
 
-const updatePaymentStatus = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { paymentId } = req.params;
-    const { status } = req.body;
+// const handlePaymentWebhook = catchAsync(
+//   async (req: Request, res: Response, next: NextFunction) => {
+//     const result = await paymentService.handlePaymentWebhook(
+//       req.body as string,
+//     );
 
-    const result = await paymentService.updatePaymentStatus(
-      paymentId as string,
-      status,
-    );
+//     sendRes({
+//       res,
+//       statusCode: 200,
+//       success: true,
+//       message: "Payment webhook handled successfully",
+//       data: result,
+//     });
+//   },
+// );
 
-    sendRes({
-      res,
-      statusCode: 200,
-      success: true,
-      message: "Payment status updated successfully",
-      data: result,
-    });
-  },
-);
+// const updatePaymentStatus = catchAsync(
+//   async (req: Request, res: Response, next: NextFunction) => {
+//     const { paymentId } = req.params;
+//     const { status } = req.body;
+
+//     const result = await paymentService.updatePaymentStatus(
+//       paymentId as string,
+//       status,
+//     );
+
+//     sendRes({
+//       res,
+//       statusCode: 200,
+//       success: true,
+//       message: "Payment status updated successfully",
+//       data: result,
+//     });
+//   },
+// );
 
 const getPaymentById = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -189,90 +189,90 @@ const getAllPayments = catchAsync(
   },
 );
 
-const refundPayment = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { paymentId } = req.params;
+// const refundPayment = catchAsync(
+//   async (req: Request, res: Response, next: NextFunction) => {
+//     const { paymentId } = req.params;
 
-    const result = await paymentService.refundPayment(
-      paymentId as string,
-      req.body,
-    );
+//     const result = await paymentService.refundPayment(
+//       paymentId as string,
+//       req.body,
+//     );
 
-    sendRes({
-      res,
-      statusCode: 200,
-      success: true,
-      message: "Payment refund initiated successfully",
-      data: result,
-    });
-  },
-);
+//     sendRes({
+//       res,
+//       statusCode: 200,
+//       success: true,
+//       message: "Payment refund initiated successfully",
+//       data: result,
+//     });
+//   },
+// );
 
-const getRefundByPaymentId = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { paymentId } = req.params;
+// const getRefundByPaymentId = catchAsync(
+//   async (req: Request, res: Response, next: NextFunction) => {
+//     const { paymentId } = req.params;
 
-    const result = await paymentService.getRefundByPaymentId(
-      paymentId as string,
-    );
+//     const result = await paymentService.getRefundByPaymentId(
+//       paymentId as string,
+//     );
 
-    sendRes({
-      res,
-      statusCode: 200,
-      success: true,
-      message: "Refund information fetched successfully",
-      data: result,
-    });
-  },
-);
+//     sendRes({
+//       res,
+//       statusCode: 200,
+//       success: true,
+//       message: "Refund information fetched successfully",
+//       data: result,
+//     });
+//   },
+// );
 
-const cancelPayment = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { paymentId } = req.params;
+// const cancelPayment = catchAsync(
+//   async (req: Request, res: Response, next: NextFunction) => {
+//     const { paymentId } = req.params;
 
-    const result = await paymentService.cancelPayment(paymentId as string);
+//     const result = await paymentService.cancelPayment(paymentId as string);
 
-    sendRes({
-      res,
-      statusCode: 200,
-      success: true,
-      message: "Payment cancelled successfully",
-      data: result,
-    });
-  },
-);
+//     sendRes({
+//       res,
+//       statusCode: 200,
+//       success: true,
+//       message: "Payment cancelled successfully",
+//       data: result,
+//     });
+//   },
+// );
 
-const getPaymentHistory = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { paymentId } = req.params;
+// const getPaymentHistory = catchAsync(
+//   async (req: Request, res: Response, next: NextFunction) => {
+//     const { paymentId } = req.params;
 
-    const result = await paymentService.getPaymentHistory(paymentId as string);
+//     const result = await paymentService.getPaymentHistory(paymentId as string);
 
-    sendRes({
-      res,
-      statusCode: 200,
-      success: true,
-      message: "Payment history fetched successfully",
-      data: result,
-    });
-  },
-);
+//     sendRes({
+//       res,
+//       statusCode: 200,
+//       success: true,
+//       message: "Payment history fetched successfully",
+//       data: result,
+//     });
+//   },
+// );
 
 export const paymentController = {
   createPayment,
   processPayment,
-  verifyPayment,
+  // verifyPayment,
   handlePaymentSuccess,
   handlePaymentFailure,
-  handlePaymentWebhook,
-  updatePaymentStatus,
+  // handlePaymentWebhook,
+  // updatePaymentStatus,
   getPaymentById,
   getPaymentByOrderId,
   getUserPayments,
   getAllPayments,
-  refundPayment,
-  getRefundByPaymentId,
-  cancelPayment,
-  getPaymentHistory,
+  // refundPayment,
+  // getRefundByPaymentId,
+  // cancelPayment,
+  // getPaymentHistory,
   ipnPayment,
 };
