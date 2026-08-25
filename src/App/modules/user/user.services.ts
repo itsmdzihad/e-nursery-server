@@ -51,8 +51,29 @@ const getUserByEmail = async (email: string) => {
   return user;
 };
 
-const getMyProfile = async (userId: string) => {};
+const getMyProfile = async (userId: string) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      avatar: true,
+      isVerified: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
 
+  if (!user) {
+    throw new AppError(404, "User not found");
+  }
+
+  return user;
+};
 const updateMyProfile = async (userId: string, payload: any) => {};
 
 const updateUser = async (userId: string, payload: any) => {};
