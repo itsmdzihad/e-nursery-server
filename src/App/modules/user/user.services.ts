@@ -249,8 +249,25 @@ const updateUserVerification = async (userId: string, isVerified: boolean) => {
   return updatedUser;
 };
 
-const deleteUser = async (userId: string) => {};
+const deleteUser = async (userId: string) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+  });
 
+  if (!user) {
+    throw new AppError(404, "User not found");
+  }
+
+  await prisma.user.delete({
+    where: {
+      id: userId,
+    },
+  });
+
+  return null;
+};
 const getAllUsers = async (query: any) => {};
 
 export const userService = {
