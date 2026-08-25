@@ -216,10 +216,38 @@ const updateUserRole = async (userId: string, role: Role) => {
 
   return updatedUser;
 };
-const updateUserVerification = async (
-  userId: string,
-  isVerified: boolean,
-) => {};
+const updateUserVerification = async (userId: string, isVerified: boolean) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+
+  if (!user) {
+    throw new AppError(404, "User not found");
+  }
+
+  const updatedUser = await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      isVerified,
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      avatar: true,
+      isVerified: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+
+  return updatedUser;
+};
 
 const deleteUser = async (userId: string) => {};
 
