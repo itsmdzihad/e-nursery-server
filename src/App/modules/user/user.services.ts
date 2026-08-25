@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import { prisma } from "../../config/db.js";
 import AppError from "../../errors/AppError.js";
+import { Role } from "../../../generated/prisma/enums.js";
 
 const createUser = async (payload: any) => {};
 
@@ -183,8 +184,38 @@ const changePassword = async (
   return null;
 };
 
-const updateUserRole = async (userId: string, role: string) => {};
+const updateUserRole = async (userId: string, role: Role) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+  });
 
+  if (!user) {
+    throw new AppError(404, "User not found");
+  }
+
+  const updatedUser = await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      role,
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      avatar: true,
+      isVerified: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+
+  return updatedUser;
+};
 const updateUserVerification = async (
   userId: string,
   isVerified: boolean,
