@@ -268,8 +268,86 @@ const deleteUser = async (userId: string) => {
 
   return null;
 };
-const getAllUsers = async (query: any) => {};
+const getAllUsers = async (query: any) => {
+  const {
+    search,
+    role,
+    isVerified,
+    page = 1,
+    limit = 10,
+    sortBy = "createdAt",
+    sortOrder = "desc",
+  } = query;
 
+  const pageNumber = Number(page);
+  const limitNumber = Number(limit);
+  const skip = (pageNumber - 1) * limitNumber;
+
+  const where: any = {};
+
+  // Search by name or email
+  if (search) {
+    where.OR = [
+      {
+        name: {
+          contains: search,
+          mode: "insensitive",
+        },
+      },
+      {
+        email: {
+          contains: search,
+          mode: "insensitive",
+        },
+      },
+    ];
+  }
+
+  // Filter by role
+  if (role) {
+    where.role = role;
+  }
+
+  // Filter by verification status
+  if (isVerified !== undefined) {
+    where.isVerified = isVerified === "true";
+  }
+
+  const [users, total] = await prisma.$transaction([
+    prisma.user.findMany({
+      where,
+      skip,
+      take: limitNumber,
+      orderBy: {
+        [sortBy]: sortOrder,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        avatar: true,
+        isVerified: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    }),
+
+    prisma.user.count({
+      where,
+    }),
+  ]);
+
+  return {
+    meta: {
+      page: pageNumber,
+      limit: limitNumber,
+      total,
+      totalPage: Math.ceil(total / limitNumber),
+    },
+    data: users,
+  };
+};
 export const userService = {
   createUser,
   getUserById,
