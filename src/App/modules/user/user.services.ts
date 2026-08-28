@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "../../config/db.js";
 import AppError from "../../errors/AppError.js";
 import { Role } from "../../../generated/prisma/enums.js";
+import uploadToCloudinary from "../../utils/uploadToCloudinary.js";
 
 const createUser = async (payload: any) => {};
 
@@ -76,7 +77,24 @@ const getMyProfile = async (userId: string) => {
 
   return user;
 };
-const updateMyProfile = async (userId: string, payload: any) => {
+const updateMyProfile = async (
+  userId: string,
+  payload: any,
+  file: Express.Multer.File,
+) => {
+  let avatar = undefined;
+  let avatarPublicId = undefined;
+
+  if (file) {
+    const result = await uploadToCloudinary(
+      file.buffer,
+      `e-nursery/users/${userId}/profile`,
+    );
+
+    avatar = result.secure_url;
+    avatarPublicId = result.public_id;
+  }
+
   const user = await prisma.user.findUnique({
     where: {
       id: userId,
@@ -91,10 +109,15 @@ const updateMyProfile = async (userId: string, payload: any) => {
     where: {
       id: userId,
     },
+
     data: {
       name: payload.name,
-      avatar: payload.avatar,
+      ...(avatar && {
+        avatar,
+        avatarPublicId,
+      }),
     },
+
     select: {
       id: true,
       name: true,

@@ -64,6 +64,7 @@ const updateMyProfile = catchAsync(
     const result = await userService.updateMyProfile(
       req.user?.id as string,
       req.body,
+      req.file as Express.Multer.File,
     );
 
     sendRes({

@@ -1,8 +1,8 @@
 import { Router } from "express";
-
 import auth from "../../middleware/auth.js";
 import { Role } from "../../../type/index.js";
 import { userController } from "./user.controller.js";
+import upload from "../../middleware/upload.js";
 
 const userRoute = Router();
 
@@ -17,6 +17,7 @@ userRoute.get(
 userRoute.patch(
   "/me",
   auth(Role.CUSTOMER, Role.ADMIN),
+  upload.single("profileImage"),
   userController.updateMyProfile,
 );
 

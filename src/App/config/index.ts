@@ -10,6 +10,9 @@ const base_url = process.env.BASE_URL as string;
 const store_name = process.env.STORE_NAME as string;
 const store_id = process.env.STORE_ID as string;
 const store_pass = process.env.STORE_PASS as string;
+const cloudinary_cloud_name = process.env.CLOUDINARY_CLOUD_NAME;
+const cloudinary_api_key = process.env.CLOUDINARY_API_KEY;
+const cloudinary_api_secret = process.env.CLOUDINARY_API_SECRET;
 
 export default {
   PORT,
@@ -20,4 +23,7 @@ export default {
   store_name,
   store_id,
   store_pass,
+  cloudinary_api_key,
+  cloudinary_api_secret,
+  cloudinary_cloud_name,
 };
