@@ -6,9 +6,12 @@ import authRoute from "./App/modules/auth/auth.route.js";
 import router from "./App/routes/index.js";
 import globalErrorHandler from "./App/middleware/globalErrorHandler.js";
 import cookieParser from "cookie-parser";
+import { multerUpload } from "./App/config/multer.config.js";
 
 const app: Application = express();
 const port = 3000;
+
+console.log(multerUpload.single(""));
 
 //parsers
 app.use(cors());

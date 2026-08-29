@@ -78,11 +78,7 @@ const getMyProfile = async (userId: string) => {
 
   return user;
 };
-const updateMyProfile = async (
-  userId: string,
-  payload: any,
-  file?: Express.Multer.File,
-) => {
+const updateMyProfile = async (userId: string, payload: any) => {
   // 1. Find user first
   const user = await prisma.user.findUnique({
     where: {
@@ -94,24 +90,8 @@ const updateMyProfile = async (
     throw new AppError(404, "User not found");
   }
 
-  let avatar = user.avatar;
-  let avatarPublicId = user.avatarPublicId;
+  const oldPublicId = user.avatarPublicId;
 
-  // Keep old public ID so we can delete it later
-  const oldAvatarPublicId = user.avatarPublicId;
-
-  // 2. Upload new image if provided
-  if (file) {
-    const result = await uploadToCloudinary(
-      file.buffer,
-      `e-nursery/users/${userId}/profile`,
-    );
-
-    avatar = result.secure_url;
-    avatarPublicId = result.public_id;
-  }
-
-  // 3. Update database
   const updatedUser = await prisma.user.update({
     where: {
       id: userId,
@@ -122,10 +102,11 @@ const updateMyProfile = async (
         name: payload.name,
       }),
 
-      ...(file && {
-        avatar,
-        avatarPublicId,
-      }),
+      ...(payload.avatar &&
+        payload.avatarPublicId && {
+          avatar: payload.avatar,
+          avatarPublicId: payload.avatarPublicId,
+        }),
     },
 
     select: {
@@ -140,9 +121,8 @@ const updateMyProfile = async (
     },
   });
 
-  // 4. Delete old image AFTER DB update succeeds
-  if (file && oldAvatarPublicId) {
-    await deleteFromCloudinary(oldAvatarPublicId);
+  if (payload.avatarPublicId && oldPublicId) {
+    await deleteFromCloudinary(oldPublicId);
   }
 
   return updatedUser;
