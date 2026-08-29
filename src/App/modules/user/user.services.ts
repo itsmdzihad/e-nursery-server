@@ -3,6 +3,7 @@ import { prisma } from "../../config/db.js";
 import AppError from "../../errors/AppError.js";
 import { Role } from "../../../generated/prisma/enums.js";
 import uploadToCloudinary from "../../utils/uploadToCloudinary.js";
+import deleteFromCloudinary from "../../utils/deleteFromCloudinary.js";
 
 const createUser = async (payload: any) => {};
 
@@ -80,21 +81,9 @@ const getMyProfile = async (userId: string) => {
 const updateMyProfile = async (
   userId: string,
   payload: any,
-  file: Express.Multer.File,
+  file?: Express.Multer.File,
 ) => {
-  let avatar = undefined;
-  let avatarPublicId = undefined;
-
-  if (file) {
-    const result = await uploadToCloudinary(
-      file.buffer,
-      `e-nursery/users/${userId}/profile`,
-    );
-
-    avatar = result.secure_url;
-    avatarPublicId = result.public_id;
-  }
-
+  // 1. Find user first
   const user = await prisma.user.findUnique({
     where: {
       id: userId,
@@ -105,14 +94,35 @@ const updateMyProfile = async (
     throw new AppError(404, "User not found");
   }
 
+  let avatar = user.avatar;
+  let avatarPublicId = user.avatarPublicId;
+
+  // Keep old public ID so we can delete it later
+  const oldAvatarPublicId = user.avatarPublicId;
+
+  // 2. Upload new image if provided
+  if (file) {
+    const result = await uploadToCloudinary(
+      file.buffer,
+      `e-nursery/users/${userId}/profile`,
+    );
+
+    avatar = result.secure_url;
+    avatarPublicId = result.public_id;
+  }
+
+  // 3. Update database
   const updatedUser = await prisma.user.update({
     where: {
       id: userId,
     },
 
     data: {
-      name: payload.name,
-      ...(avatar && {
+      ...(payload.name !== undefined && {
+        name: payload.name,
+      }),
+
+      ...(file && {
         avatar,
         avatarPublicId,
       }),
@@ -129,6 +139,11 @@ const updateMyProfile = async (
       updatedAt: true,
     },
   });
+
+  // 4. Delete old image AFTER DB update succeeds
+  if (file && oldAvatarPublicId) {
+    await deleteFromCloudinary(oldAvatarPublicId);
+  }
 
   return updatedUser;
 };
