@@ -9,7 +9,7 @@ const productRoute = Router();
 
 productRoute.post(
   "/",
-  multerUpload.fields([{ name: "images", maxCount: 3 }]),
+  multerUpload.any(),
   productMiddleware.createProduct,
   // validateRequest(productValidation.createProduct),
   productController.createProduct,

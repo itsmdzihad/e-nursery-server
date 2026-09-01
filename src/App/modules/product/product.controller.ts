@@ -5,14 +5,14 @@ import sendRes from "../../utils/sendRes.js";
 
 const createProduct = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    // const result = await productService.createProduct(req.body);
+    const result = await productService.createProduct(req.body);
 
     sendRes({
       res,
       success: true,
       message: "Product created successfully",
       statusCode: 200,
-      data: {},
+      data: result,
     });
   },
 );
