@@ -11,7 +11,7 @@ productRoute.post(
   "/",
   multerUpload.any(),
   productMiddleware.createProduct,
-  // validateRequest(productValidation.createProduct),
+  validateRequest(productValidation.createProduct),
   productController.createProduct,
 );
 

@@ -38,6 +38,10 @@ const createProduct = async (payload: any) => {
         })),
       },
     },
+    include: {
+      sizes: true,
+      category: true,
+    },
   });
   return data;
 };
