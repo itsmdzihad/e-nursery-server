@@ -63,16 +63,16 @@ const deleteProductById = catchAsync(
 
 const updateProductById = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const result = await productService.updateProductById(
-      req.params.id as string,
-      req.body,
-    );
+    // const result = await productService.updateProductById(
+    //   req.params.id as string,
+    //   req.body,
+    // );
     sendRes({
       res,
       success: true,
       message: "Product Update Successfully",
       statusCode: 200,
-      data: result,
+      data: req.body,
     });
   },
 );

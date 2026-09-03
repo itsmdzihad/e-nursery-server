@@ -3,6 +3,7 @@ import AppError from "../../errors/AppError.js";
 
 const createProduct = (req: Request, res: Response, next: NextFunction) => {
   try {
+    console.log(req.files);
     const data = JSON.parse(req.body.data);
 
     const files = req.files as Express.Multer.File[];

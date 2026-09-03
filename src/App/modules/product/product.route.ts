@@ -20,9 +20,9 @@ productRoute.get("/:id", productController.getProductById);
 productRoute.delete("/:id", productController.deleteProductById);
 productRoute.patch(
   "/:id",
-  multerUpload.fields([{ name: "images", maxCount: 3 }]),
+  multerUpload.any(),
   productMiddleware.updateProduct,
-  validateRequest(productValidation.updateProduct),
+  // validateRequest(productValidation.updateProduct),
   productController.updateProductById,
 );
 productRoute.delete("/size/:id", productController.deleteProductSizeById);
