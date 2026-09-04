@@ -86,9 +86,10 @@ const deleteProductById = async (id: string) => {
 };
 
 const updateProductById = async (id: string, payload: any) => {
-  const { sizes, categoryId, ...productData } = payload;
+  const { sizes, categoryId, images, ...productData } = payload;
 
   const data = await prisma.$transaction(async (tx) => {
+    // Check product
     const existingProduct = await tx.product.findUnique({
       where: { id },
     });
@@ -97,6 +98,7 @@ const updateProductById = async (id: string, payload: any) => {
       throw new AppError(404, "Product Not Found");
     }
 
+    // Check category
     if (categoryId !== undefined) {
       const category = await tx.category.findUnique({
         where: {
@@ -109,7 +111,29 @@ const updateProductById = async (id: string, payload: any) => {
       }
     }
 
-    const product = await tx.product.update({
+    /*
+     * Product images
+     */
+    let updatedImages = existingProduct.images;
+
+    if (images !== undefined) {
+      updatedImages = [...existingProduct.images];
+
+      for (const image of images) {
+        const index = updatedImages.indexOf(image.previous);
+
+        if (index === -1) {
+          throw new AppError(404, "Previous product image not found");
+        }
+
+        if (image.new) {
+          updatedImages[index] = image.new;
+        }
+      }
+    }
+
+    // Update product
+    await tx.product.update({
       where: {
         id,
       },
@@ -117,18 +141,23 @@ const updateProductById = async (id: string, payload: any) => {
         ...(productData.name !== undefined && {
           name: productData.name,
         }),
+
         ...(productData.description !== undefined && {
           description: productData.description,
         }),
-        ...(productData.images !== undefined && {
-          images: productData.images,
+
+        ...(images !== undefined && {
+          images: updatedImages,
         }),
+
         ...(productData.price !== undefined && {
           price: new Prisma.Decimal(productData.price),
         }),
+
         ...(productData.quantity !== undefined && {
           quantity: Number(productData.quantity),
         }),
+
         ...(categoryId !== undefined && {
           category: {
             connect: {
@@ -139,45 +168,87 @@ const updateProductById = async (id: string, payload: any) => {
       },
     });
 
+    /*
+     * Sizes
+     */
     if (sizes?.length) {
       await Promise.all(
         sizes.map(async (size: any) => {
-          const existingSize = await tx.size.findUnique({
-            where: {
-              id: size.id,
-            },
-          });
+          // Update size
+          if (size.action === "update") {
+            const existingSize = await tx.size.findUnique({
+              where: {
+                id: size.id,
+              },
+            });
 
-          if (!existingSize) {
-            throw new AppError(404, `Size with id ${size.id} not found`);
+            if (!existingSize) {
+              throw new AppError(404, `Size with id ${size.id} not found`);
+            }
+
+            return tx.size.update({
+              where: {
+                id: size.id,
+              },
+              data: {
+                ...(size.name !== undefined && {
+                  name: size.name,
+                }),
+
+                ...(size.images !== undefined && {
+                  images: size.images,
+                }),
+
+                ...(size.quantity !== undefined && {
+                  quantity: Number(size.quantity),
+                }),
+
+                ...(size.price !== undefined && {
+                  price: new Prisma.Decimal(size.price),
+                }),
+              },
+            });
           }
 
-          return tx.size.update({
-            where: {
-              id: size.id,
-            },
-            data: {
-              ...(size.name !== undefined && {
+          // Delete size
+          if (size.action === "delete") {
+            const existingSize = await tx.size.findUnique({
+              where: {
+                id: size.id,
+              },
+            });
+
+            if (!existingSize) {
+              throw new AppError(404, `Size with id ${size.id} not found`);
+            }
+
+            return tx.size.delete({
+              where: {
+                id: size.id,
+              },
+            });
+          }
+
+          // Add size
+          if (size.action === "add") {
+            return tx.size.create({
+              data: {
                 name: size.name,
-              }),
-              ...(size.images !== undefined && {
-                images: size.images,
-              }),
-              ...(size.quantity !== undefined && {
+                images: size.images || [],
                 quantity: Number(size.quantity),
-              }),
-              ...(size.price !== undefined && {
                 price: new Prisma.Decimal(size.price),
-              }),
-            },
-          });
+                productId: id,
+              },
+            });
+          }
         }),
       );
     }
 
+    // Return updated product
     return tx.product.findUnique({
       where: {
-        id: product.id,
+        id,
       },
       include: {
         category: true,
