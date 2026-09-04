@@ -69,7 +69,55 @@ const createProduct = (req: Request, res: Response, next: NextFunction) => {
 };
 
 const updateProduct = (req: Request, res: Response, next: NextFunction) => {
-  console.log(req.body.data);
+  let data = JSON.parse(req.body.data);
+
+  console.log(data);
+  console.log(req.files);
+
+  let files = req.files as Express.Multer.File[];
+
+  data.images = data.images.map((img: any) => {
+    const file = files.find((file: any) => file.fieldname === img.id);
+
+    if (file) {
+      return {
+        ...img,
+        new: file.path,
+      };
+    }
+
+    return img;
+  });
+
+  const sizeMap = new Map(
+    data.sizes.map((size: any) => {
+      return [size.id, size];
+    }),
+  );
+
+  for (const file of files) {
+    if (file.fieldname.includes("images")) {
+      continue;
+    }
+
+    if (!sizeMap.has(file.fieldname)) {
+      throw new AppError(400, `Invalid image field: ${file.fieldname}`);
+    }
+  }
+
+  data.sizes = data.sizes.map((size: any) => {
+    const sizeFiles = files.filter((file) => file.fieldname === size.id);
+    return {
+      ...size,
+      ...(size.action === "add" || size.action === "update"
+        ? {
+            images: sizeFiles.map((file) => file.path),
+          }
+        : {}),
+    };
+  });
+
+  req.body = data;
 
   next();
 };
