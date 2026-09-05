@@ -11,8 +11,6 @@ import { multerUpload } from "./App/config/multer.config.js";
 const app: Application = express();
 const port = 3000;
 
-console.log(multerUpload.single(""));
-
 //parsers
 app.use(cors());
 app.use(express.json());

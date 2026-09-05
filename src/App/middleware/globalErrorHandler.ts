@@ -2,14 +2,18 @@ import { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status";
 import { capitalizeFirstLetter } from "../utils/sendRes.js";
 import config from "../config/index.js";
+import deleteUploadedFilesFromGlobalErrorHandler from "../utils/deleteUploadedFilesFromGlobalErrorHandler.js";
 
-const globalErrorHandler = (
+const globalErrorHandler = async (
   err: any,
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
   console.log(err);
+
+  await deleteUploadedFilesFromGlobalErrorHandler(req);
+
   let statusCode = err.statusCode
     ? err.statusCode
     : httpStatus.INTERNAL_SERVER_ERROR;
