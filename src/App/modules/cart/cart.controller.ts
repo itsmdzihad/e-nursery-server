@@ -1,7 +1,7 @@
 import httpStatus from "http-status";
 import { NextFunction, Request, Response } from "express";
 import catchAsync from "../../utils/catchAsync.js";
-import { cartService } from "./cart.services.js";
+import { cartService } from "./cart.service.js";
 import sendRes from "../../utils/sendRes.js";
 
 const getAllCart = catchAsync(

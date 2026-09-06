@@ -1,7 +1,7 @@
 import { tokenHelper } from "./../../utils/tokenHelper.js";
 import { NextFunction, Request, Response } from "express";
 import catchAsync from "../../utils/catchAsync.js";
-import { authService } from "./auth.services.js";
+import { authService } from "./auth.service.js";
 import sendRes from "../../utils/sendRes.js";
 import config from "../../config/index.js";
 

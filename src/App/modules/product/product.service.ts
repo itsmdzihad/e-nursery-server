@@ -1,6 +1,6 @@
 import httpStatus from "http-status";
 import { Prisma } from "../../../generated/prisma/client.js";
-import { prisma } from "../../config/db.js";
+import { prisma } from "../../config/db.config.js";
 import AppError from "../../errors/AppError.js";
 
 const createProduct = async (payload: any) => {

@@ -2,7 +2,7 @@ import crypto from "node:crypto";
 import SSLCommerzPayment from "sslcommerz-lts";
 import config from "../../config/index.js";
 import AppError from "../../errors/AppError.js";
-import { prisma } from "../../config/db.js";
+import { prisma } from "../../config/db.config.js";
 import {
   OrderStatus,
   PaymentMethod,

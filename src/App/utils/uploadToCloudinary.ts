@@ -1,5 +1,5 @@
 import { UploadApiErrorResponse, UploadApiResponse } from "cloudinary";
-import cloudinary from "../config/cloudinary.js";
+import cloudinary from "../config/cloudinary.config.js";
 import AppError from "../errors/AppError.js";
 
 const uploadToCloudinary = async (

@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import { prisma } from "../../config/db.js";
+import { prisma } from "../../config/db.config.js";
 import AppError from "../../errors/AppError.js";
 import { Role } from "../../../generated/prisma/enums.js";
 import uploadToCloudinary from "../../utils/uploadToCloudinary.js";

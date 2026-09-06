@@ -2,7 +2,7 @@ import httpStatus from "http-status";
 import { NextFunction, Request, Response } from "express";
 import catchAsync from "../../utils/catchAsync.js";
 import sendRes from "../../utils/sendRes.js";
-import { addressService } from "./address.services.js";
+import { addressService } from "./address.service.js";
 import AppError from "../../errors/AppError.js";
 
 const createAddress = catchAsync(

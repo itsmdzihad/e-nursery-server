@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import catchAsync from "../../utils/catchAsync.js";
-import { productService } from "./product.services.js";
+import { productService } from "./product.service.js";
 import sendRes from "../../utils/sendRes.js";
 
 const createProduct = catchAsync(

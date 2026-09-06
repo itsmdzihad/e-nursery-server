@@ -1,5 +1,5 @@
 import httpStatus from "http-status";
-import { prisma } from "../../config/db.js";
+import { prisma } from "../../config/db.config.js";
 import AppError from "../../errors/AppError.js";
 import { Role } from "../../../type/index.js";
 

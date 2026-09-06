@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import catchAsync from "../../utils/catchAsync.js";
 import sendRes from "../../utils/sendRes.js";
-import { orderService } from "./order.services.js";
+import { orderService } from "./order.service.js";
 import { OrderStatus, PaymentStatus } from "../../../generated/prisma/enums.js";
 
 const createOrder = catchAsync(

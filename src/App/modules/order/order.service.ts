@@ -1,5 +1,5 @@
 import { Decimal } from "@prisma/client/runtime/client";
-import { prisma } from "../../config/db.js";
+import { prisma } from "../../config/db.config.js";
 import AppError from "../../errors/AppError.js";
 import {
   OrderStatus,

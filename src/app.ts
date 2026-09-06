@@ -1,7 +1,7 @@
 import express, { Application, ErrorRequestHandler } from "express";
 import sendRes from "./App/utils/sendRes.js";
 import cors from "cors";
-import { prisma } from "./App/config/db.js";
+import { prisma } from "./App/config/db.config.js";
 import authRoute from "./App/modules/auth/auth.route.js";
 import router from "./App/routes/index.js";
 import globalErrorHandler from "./App/middleware/globalErrorHandler.js";

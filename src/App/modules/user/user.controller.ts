@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import sendRes from "../../utils/sendRes.js";
-import { userService } from "./user.services.js";
+import { userService } from "./user.service.js";
 import catchAsync from "../../utils/catchAsync.js";
 
 const createUser = catchAsync(

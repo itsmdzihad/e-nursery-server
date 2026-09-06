@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import catchAsync from "../../utils/catchAsync.js";
-import { categoryService } from "./category.services.js";
+import { categoryService } from "./category.service.js";
 import sendRes from "../../utils/sendRes.js";
 
 const createCategory = catchAsync(
