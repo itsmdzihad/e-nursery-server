@@ -12,6 +12,11 @@ authRoute.post(
 );
 
 authRoute.post(
+  "/verify-otp",
+  authController.otpVerification,
+);
+
+authRoute.post(
   "/login",
   validateRequest(authValidation.loginUserSchema),
   authController.userLogin,

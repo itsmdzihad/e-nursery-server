@@ -1,0 +1,26 @@
+enum OtpPurpose {
+    SIGN_UP
+    LOGIN
+    CHANGE_PASSWORD
+    FORGOT_PASSWORD
+}
+
+model Otp {
+    id String @id @default(uuid())
+
+    email String
+
+    codeHash String
+
+    purpose OtpPurpose
+
+    expiresAt DateTime
+
+    attempts Int @default(0)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([email, purpose])
+    @@index([expiresAt])
+}

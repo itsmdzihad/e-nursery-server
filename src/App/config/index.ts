@@ -13,6 +13,10 @@ const store_pass = process.env.STORE_PASS as string;
 const cloudinary_cloud_name = process.env.CLOUDINARY_CLOUD_NAME;
 const cloudinary_api_key = process.env.CLOUDINARY_API_KEY;
 const cloudinary_api_secret = process.env.CLOUDINARY_API_SECRET;
+const email_sender_smtp_user = process.env.EMAIL_SENDER_SMTP_USER;
+const email_sender_smtp_pass = process.env.EMAIL_SENDER_SMTP_PASS;
+const email_sender_smtp_from = process.env.EMAIL_SENDER_SMTP_FROM;
+const otp_secret = process.env.OTP_SECRET;
 
 export default {
   PORT,
@@ -26,4 +30,8 @@ export default {
   cloudinary_api_key,
   cloudinary_api_secret,
   cloudinary_cloud_name,
+  email_sender_smtp_from,
+  email_sender_smtp_pass,
+  email_sender_smtp_user,
+  otp_secret,
 };
