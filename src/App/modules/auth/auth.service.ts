@@ -137,8 +137,37 @@ const otpVerification = async (
   });
 };
 
+const reSendOtp = async (payload: { email: string; purpose: OtpPurpose }) => {
+  console.log(payload);
+
+  if (!payload.email) {
+    throw new Error("Email is required.");
+  }
+
+  if (!payload.purpose) {
+    throw new Error("OTP purpose is required.");
+  }
+
+  const user = await prisma.user.findUnique({
+    where: {
+      email: payload.email,
+    },
+  });
+
+  if (!user) {
+    throw new Error("User not found.");
+  }
+
+  await emailService.sendVerificationOtpEmail(
+    user.email,
+    user.name || "User",
+    payload.purpose,
+    "otp.email",
+  );
+};
 export const authService = {
   registerUser,
   loginUser,
   otpVerification,
+  reSendOtp,
 };

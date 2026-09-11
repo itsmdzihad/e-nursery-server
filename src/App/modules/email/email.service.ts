@@ -54,6 +54,22 @@ const sendVerificationOtpEmail = async (
   });
 };
 
+// const resendVerificationOtpEmail = async (
+//   email: string,
+//   purpose: OtpPurpose,
+// ) => {
+//   const oldOtp = prisma.otp.findFirst({
+//     where: {
+//       email,
+//       purpose,
+//     },
+//     orderBy: {
+//       createdAt: "desc",
+//     },
+//   });
+
+// };
+
 const sendWelcomeEmail = async () => {};
 
 const sendOrderConfirmationEmail = async () => {};

@@ -4,6 +4,7 @@ import catchAsync from "../../utils/catchAsync.js";
 import { authService } from "./auth.service.js";
 import sendRes from "../../utils/sendRes.js";
 import config from "../../config/index.js";
+import AppError from "../../errors/AppError.js";
 
 const userRegistration = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -68,8 +69,34 @@ const otpVerification = catchAsync(
     });
   },
 );
+
+const reSendOtp = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.body) {
+      throw new AppError(404, "Please Provide Your Information");
+    }
+
+    // if (!req.body.email) {
+    //   throw new AppError(404, "Please Provide Your Information");
+    // }
+
+    // console.log(req.body);
+
+    await authService.reSendOtp(req.body);
+
+    sendRes({
+      res,
+      success: true,
+      statusCode: 200,
+      message: "OTP sent successfully. Please check your email.",
+      data: {},
+    });
+  },
+);
+
 export const authController = {
   userRegistration,
   userLogin,
   otpVerification,
+  reSendOtp,
 };

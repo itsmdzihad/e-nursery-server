@@ -11,10 +11,9 @@ authRoute.post(
   authController.userRegistration,
 );
 
-authRoute.post(
-  "/verify-otp",
-  authController.otpVerification,
-);
+authRoute.post("/verify-otp", authController.otpVerification);
+
+authRoute.post("/resend-otp", authController.reSendOtp);
 
 authRoute.post(
   "/login",
