@@ -24,12 +24,6 @@ userRoute.patch(
   userController.updateMyProfile,
 );
 
-userRoute.patch(
-  "/me/password",
-  auth(Role.CUSTOMER, Role.ADMIN),
-  userController.changePassword,
-);
-
 // Admin
 
 userRoute.get("/", auth(Role.ADMIN), userController.getAllUsers);

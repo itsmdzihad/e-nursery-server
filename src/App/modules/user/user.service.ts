@@ -163,44 +163,6 @@ const updateUser = async (userId: string, payload: any) => {
 
   return updatedUser;
 };
-const changePassword = async (
-  userId: string,
-  oldPassword: string,
-  newPassword: string,
-) => {
-  const user = await prisma.user.findUnique({
-    where: {
-      id: userId,
-    },
-    select: {
-      id: true,
-      password: true,
-    },
-  });
-
-  if (!user) {
-    throw new AppError(404, "User not found");
-  }
-
-  const isPasswordMatched = await bcrypt.compare(oldPassword, user.password);
-
-  if (!isPasswordMatched) {
-    throw new AppError(401, "Old password is incorrect");
-  }
-
-  const hashedPassword = await bcrypt.hash(newPassword, 12);
-
-  await prisma.user.update({
-    where: {
-      id: userId,
-    },
-    data: {
-      password: hashedPassword,
-    },
-  });
-
-  return null;
-};
 
 const updateUserRole = async (userId: string, role: Role) => {
   const user = await prisma.user.findUnique({
@@ -373,7 +335,6 @@ export const userService = {
   getMyProfile,
   updateMyProfile,
   updateUser,
-  changePassword,
   updateUserRole,
   updateUserVerification,
   deleteUser,

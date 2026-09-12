@@ -165,9 +165,50 @@ const reSendOtp = async (payload: { email: string; purpose: OtpPurpose }) => {
     "otp.email",
   );
 };
+
+const resetPassword = async (
+  userId: string,
+  oldPassword: string,
+  newPassword: string,
+) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+    select: {
+      id: true,
+      password: true,
+    },
+  });
+
+  if (!user) {
+    throw new AppError(404, "User not found");
+  }
+
+  const isPasswordMatched = await bcrypt.compare(oldPassword, user.password);
+
+  if (!isPasswordMatched) {
+    throw new AppError(401, "Old password is incorrect");
+  }
+
+  const hashedPassword = await bcrypt.hash(newPassword, 12);
+
+  await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      password: hashedPassword,
+    },
+  });
+
+  return null;
+};
+
 export const authService = {
   registerUser,
   loginUser,
   otpVerification,
   reSendOtp,
+  resetPassword,
 };

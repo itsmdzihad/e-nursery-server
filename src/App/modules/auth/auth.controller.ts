@@ -94,9 +94,28 @@ const reSendOtp = catchAsync(
   },
 );
 
+const resetPassword = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const result = await authService.resetPassword(
+      req.user?.id,
+      req.body.oldPassword,
+      req.body.newPassword,
+    );
+
+    sendRes({
+      res,
+      success: true,
+      message: "Password changed successfully",
+      statusCode: 200,
+      data: result,
+    });
+  },
+);
+
 export const authController = {
   userRegistration,
   userLogin,
   otpVerification,
   reSendOtp,
+  resetPassword,
 };
