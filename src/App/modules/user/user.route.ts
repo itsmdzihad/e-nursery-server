@@ -2,7 +2,6 @@ import { Router } from "express";
 import auth from "../../middleware/auth.js";
 import { Role } from "../../../type/index.js";
 import { userController } from "./user.controller.js";
-import upload from "../../middleware/upload.js";
 import { multerUpload } from "../../config/multer.config.js";
 import { userMiddleware } from "./user.middleware.js";
 

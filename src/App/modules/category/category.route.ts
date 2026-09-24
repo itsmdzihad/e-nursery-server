@@ -2,11 +2,19 @@ import { Router } from "express";
 import { categoryController } from "./category.controller.js";
 import auth from "../../middleware/auth.js";
 import { Role } from "../../../type/index.js";
+import { multerUpload } from "../../config/multer.config.js";
+import { categoryMiddleware } from "./category.middleware.js";
 
 const categoryRoute = Router();
 
 // Create
-categoryRoute.post("/", auth(Role.ADMIN), categoryController.createCategory);
+categoryRoute.post(
+  "/",
+  auth(Role.ADMIN),
+  multerUpload.single("categoryImg"),
+  categoryMiddleware.createCategory,
+  categoryController.createCategory,
+);
 
 // Read
 categoryRoute.get("/", categoryController.getAllCategories);
