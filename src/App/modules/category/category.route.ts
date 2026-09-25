@@ -52,6 +52,8 @@ categoryRoute.get(
 categoryRoute.patch(
   "/:categoryId",
   auth(Role.ADMIN),
+  multerUpload.single("categoryImg"),
+  categoryMiddleware.updateCategory,
   categoryController.updateCategory,
 );
 

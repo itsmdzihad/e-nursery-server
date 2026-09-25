@@ -9,6 +9,16 @@ const createCategory = (req: Request, res: Response, next: NextFunction) => {
   next();
 };
 
+const updateCategory = (req: Request, res: Response, next: NextFunction) => {
+  if (req.body.data) {
+    req.body = JSON.parse(req.body.data);
+  }
+
+  req.body.image = req.file?.path;
+  next();
+};
+
 export const categoryMiddleware = {
   createCategory,
+  updateCategory,
 };
